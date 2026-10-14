@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Placeholder for photo number 6">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff1f2"/>
+      <stop offset="0.55" stop-color="#ffe4e6"/>
+      <stop offset="1" stop-color="#fecdd3"/>
+    </linearGradient>
+    <radialGradient id="glow5" cx="0.5" cy="0.4" r="0.55">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#bg5)"/>
+  <g opacity="0.5">
+  <circle cx="705" cy="145" r="67" fill="#e11d48" opacity="0.180.25"/>
+  <circle cx="94" cy="378" r="52" fill="#e11d48" opacity="0.180.12"/>
+  <circle cx="243" cy="51" r="37" fill="#e11d48" opacity="0.180.29"/>
+  <circle cx="392" cy="284" r="68" fill="#e11d48" opacity="0.180.16"/>
+  <circle cx="541" cy="517" r="53" fill="#e11d48" opacity="0.180.03"/>
+  <circle cx="690" cy="190" r="38" fill="#e11d48" opacity="0.180.20"/>
+  <circle cx="79" cy="423" r="69" fill="#e11d48" opacity="0.180.07"/>
+  </g>
+  <ellipse cx="400" cy="245" rx="310" ry="215" fill="url(#glow5)"/>
+
+  <g transform="translate(400 240) scale(8) translate(-12 -10.5)" opacity="0.42">
+    <path d="M12 21s-7.5-4.9-9.6-9.2C.7 8.3 2.6 4.6 6.1 4c2-.3 3.9.7 4.9 2.3C12 4.7 13.9 3.7 15.9 4c3.5.6 5.4 4.3 3.7 7.8C19.5 16.1 12 21 12 21Z" fill="#e11d48"/>
+  </g>
+
+  <text x="400" y="440" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="46" fill="#411223" opacity="0.82">Our Memory</text>
+  <text x="400" y="482" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" letter-spacing="6" fill="#411223" opacity="0.45">PLACE YOUR PHOTO HERE</text>
+</svg>

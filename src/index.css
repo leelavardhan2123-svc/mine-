@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+/* ── Custom theme tokens (linked to the colours in src/config/site.ts) ── */
+@theme inline {
+  --color-love-primary: var(--love-primary);
+  --color-love-secondary: var(--love-secondary);
+  --color-love-accent: var(--love-accent);
+  --color-love-blush: var(--love-blush);
+  --color-love-cream: var(--love-cream);
+  --color-love-lavender: var(--love-lavender);
+  --color-love-ink: var(--love-ink);
+
+  --font-script: "Great Vibes", "Segoe Script", cursive;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Default palette — overwritten at runtime from the config file */
+:root {
+  --love-primary: #be123c;
+  --love-secondary: #e11d48;
+  --love-accent: #a78bfa;
+  --love-blush: #ffe4e9;
+  --love-cream: #fff8f0;
+  --love-lavender: #ede9fe;
+  --love-ink: #411223;
+
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-serif);
+  color: var(--love-ink);
+  background-color: var(--love-cream);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--love-secondary) 30%, white);
+  color: var(--love-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--love-primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Reusable pieces ─────────────────────────────────────────── */
+
+.glass {
+  background: color-mix(in oklab, white 66%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid color-mix(in oklab, white 70%, var(--love-primary));
+  box-shadow:
+    0 10px 40px -18px color-mix(in oklab, var(--love-primary) 45%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 80%, transparent);
+}
+
+.paper {
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in oklab, var(--love-cream) 92%, white),
+      color-mix(in oklab, var(--love-blush) 55%, white)
+    );
+  border: 1px solid color-mix(in oklab, var(--love-primary) 18%, white);
+  box-shadow: 0 24px 60px -30px color-mix(in oklab, var(--love-primary) 60%, transparent);
+}
+
+.glow-ring {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--love-primary) 25%, transparent),
+    0 10px 35px -10px color-mix(in oklab, var(--love-secondary) 65%, transparent),
+    0 0 60px -12px color-mix(in oklab, var(--love-secondary) 55%, transparent);
+}
+
+.text-shadow-soft {
+  text-shadow: 0 2px 24px color-mix(in oklab, var(--love-secondary) 35%, transparent);
+}
+
+/* ── Keyframes ───────────────────────────────────────────────── */
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10vh, 0) rotate(-8deg) scale(0.9);
+  }
+  12% {
+    opacity: var(--heart-opacity, 0.5);
+  }
+  85% {
+    opacity: var(--heart-opacity, 0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift, 20px), -105vh, 0) rotate(14deg) scale(1.05);
+  }
+}
+
+@keyframes petal-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -8vh, 0) rotate(0deg);
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift, 60px), 108vh, 0) rotate(420deg);
+  }
+}
+
+@keyframes blob-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4vw, -3vh, 0) scale(1.12);
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.14);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.09);
+  }
+  56% {
+    transform: scale(1);
+  }
+}
+
+@keyframes caret-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes equalizer {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ── Animation utilities ─────────────────────────────────────── */
+
+.animate-twinkle {
+  animation: twinkle var(--tw, 4s) ease-in-out infinite;
+}
+
+.float-heart {
+  animation: float-up var(--dur, 18s) linear infinite;
+}
+
+.float-petal {
+  animation: petal-fall var(--dur, 26s) linear infinite;
+}
+
+.animate-blob {
+  animation: blob-drift var(--dur, 26s) ease-in-out infinite;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.6s ease-in-out infinite;
+}
+
+.animate-caret {
+  animation: caret-blink 1s step-end infinite;
+}
+
+.animate-equalizer {
+  animation: equalizer var(--speed, 0.9s) ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.animate-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in oklab, white 70%, transparent) 45%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3.2s linear infinite;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
