@@ -51,7 +51,7 @@ export const en = {
   'privacy.savedLocal': 'Saved only on this device',
 
   'footer.disclaimer':
-    'Sahara is an independent assistance platform built for the INNOHACKS 2.0 challenge. It is not a government authority and does not approve benefits.',
+    'Sahara is an independent assistance platform built to simplify government scheme discovery. It is not a government authority and does not approve benefits.',
   'footer.sources': 'Scheme details come from official government portals; each record shows its source and last-verified date.',
   'footer.notOfficial':
     'An assessment from Sahara is a preliminary informational check — only the concerned department can confirm eligibility.',
