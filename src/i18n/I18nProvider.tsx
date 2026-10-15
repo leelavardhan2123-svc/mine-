@@ -3,17 +3,26 @@ import type { ReactNode } from 'react'
 import { en } from './en.ts'
 import type { MessageKey, Messages } from './en.ts'
 import { te } from './te.ts'
-import { I18nContext } from './context.ts'
+import { hi } from './hi.ts'
+import { ta } from './ta.ts'
+import { bn } from './bn.ts'
+import { mr } from './mr.ts'
+import { gu } from './gu.ts'
+import { kn } from './kn.ts'
+import { ml } from './ml.ts'
+import { pa } from './pa.ts'
+import { or } from './or.ts'
+import { I18nContext, isLang } from './context.ts'
 import type { I18nValue, Lang } from './context.ts'
 
 const STORAGE_KEY = 'sahayak:lang'
 
-const DICTS: Record<Lang, Partial<Messages>> = { en, te }
+const DICTS: Record<Lang, Partial<Messages>> = { en, hi, te, ta, bn, mr, gu, kn, ml, pa, or }
 
 function readStoredLang(): Lang {
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY)
-    if (stored === 'en' || stored === 'te') return stored
+    if (isLang(stored)) return stored
   } catch {
     /* storage unavailable */
   }
@@ -24,7 +33,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => readStoredLang())
 
   useEffect(() => {
-    document.documentElement.lang = lang === 'te' ? 'te' : 'en'
+    document.documentElement.lang = lang
     document.body.dataset.lang = lang
     try {
       window.localStorage.setItem(STORAGE_KEY, lang)

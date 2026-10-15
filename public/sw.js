@@ -1,4 +1,4 @@
-const CACHE = 'sahayak-shell-v2'
+const CACHE = 'sahara-shell-v3'
 
 const SHELL = ['./', './index.html', './favicon.svg']
 

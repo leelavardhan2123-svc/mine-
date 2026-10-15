@@ -17,7 +17,7 @@ import type {
   VerificationStatus,
 } from '../../data/types.ts'
 import { useI18n } from '../../i18n/useI18n.ts'
-import { speakText } from '../../services/speech.ts'
+import { speakText, voiceTagFor } from '../../services/speech.ts'
 
 export function Card({
   children,
@@ -150,7 +150,7 @@ export function SpeakButton({ text, label }: { text: string; label?: string }) {
   return (
     <button
       type="button"
-      onClick={() => speakText(text, lang === 'te' ? 'te-IN' : 'en-IN')}
+      onClick={() => speakText(text, voiceTagFor(lang))}
       className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-xs font-semibold text-muted transition hover:text-navy"
       title={t('a11y.listen')}
     >

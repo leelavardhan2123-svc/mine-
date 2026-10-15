@@ -1,8 +1,8 @@
-# Sahayak
+# Sahara
 
 **Every eligible citizen deserves to know.**
 
-Sahayak is a citizen-facing discovery app for Indian government schemes, built for
+Sahara is a citizen-facing discovery app for Indian government schemes, built for
 the INNOHACKS 2.0 challenge. Answer a short guided questionnaire and get:
 
 - **Eligibility matches** — a deterministic engine evaluates your answers against
@@ -11,11 +11,12 @@ the INNOHACKS 2.0 challenge. Answer a short guided questionnaire and get:
   missing, and where to verify (source URL + last-verified date).
 - **A document checklist** — tick off documents as you prepare them.
 - **A scheme passport** — saved matches, benefits and application channels.
-- **Telugu + English** — the whole UI switches language in one tap, with speak-aloud.
+- **11 Indian languages** — English, Telugu, Hindi, Tamil, Bengali, Marathi,
+  Gujarati, Kannada, Malayalam, Punjabi and Odia, with speak-aloud.
 - **Family benefit map** — see which schemes may fit each family member.
 - **Offline-lite** — a service worker keeps the shell usable without a network.
 
-Sahayak is **not** a government body. It does not accept applications and cannot
+Sahara is **not** a government body. It does not accept applications and cannot
 approve benefits; every record links the official portal for the real step.
 
 **Stack:** React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · Framer Motion · Lucide
@@ -59,7 +60,7 @@ npm run smoke            # terminal 2
   - some required answers missing → `potential`
   - otherwise → `likely`
 - Rules that must be checked by an office are `manual-verify` and always count as
-  unknown — Sahayak never pretends to know them.
+  unknown — Sahara never pretends to know them.
 - Results sort strong matches first. No scores, no randomness, no popularity.
 
 The AI explainer (`Ask`) only answers from the scheme record provided to it and
@@ -114,7 +115,7 @@ src/
   app/AppShell.tsx        Header, nav, language switch, footer + disclaimer
   data/                   Scheme catalogue, questions, documents, personas
   engine/eligibility.ts   Deterministic rule evaluation
-  i18n/                   en.ts + te.ts dictionaries, provider, hooks
+  i18n/                   11 language dictionaries (en/te full, 9 core + en fallback), provider, hooks
   pages/                  One file per route
   services/               localStorage, store, metrics, passport, admin, ai, speech
   components/             QuestionField, SchemeCard, ui primitives

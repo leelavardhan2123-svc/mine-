@@ -15,6 +15,7 @@ import {
   startVoiceInput,
   stopSpeaking,
   voiceInputSupported,
+  voiceTagFor,
 } from '../services/speech.ts'
 
 type ChatMessage = {
@@ -52,7 +53,7 @@ export default function AssistantWidget() {
   const thinkingRef = useRef(false)
   const beginListeningRef = useRef<() => void>(() => {})
   const stopRecognitionRef = useRef<(() => void) | null>(null)
-  const voiceLang = lang === 'te' ? 'te-IN' : 'en-IN'
+  const voiceLang = voiceTagFor(lang)
 
   useEffect(() => {
     thinkingRef.current = thinking
@@ -120,7 +121,7 @@ export default function AssistantWidget() {
         setMessages((prev) => [...prev, matchesMessage()])
         return true
       }
-      if (/(what is sahayak|about sahayak|సహాయక్ అంటే)/.test(q)) {
+      if (/(what is sahara|about sahara|sahayak|సహారా అంటే|सहारा क्या)/.test(q)) {
         await new Promise((resolve) => setTimeout(resolve, 200))
         setMessages((prev) => [
           ...prev,

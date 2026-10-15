@@ -5,10 +5,11 @@ import { STATE_CODES } from '../data/types.ts'
 import type { AnswerValue, StateCode } from '../data/types.ts'
 import { en } from '../i18n/en.ts'
 import { te } from '../i18n/te.ts'
+import type { Lang } from '../i18n/context.ts'
 import { useI18n } from '../i18n/useI18n.ts'
 import { SpeakButton } from './ui/index.tsx'
 
-function stateName(code: string, lang: 'en' | 'te'): string {
+function stateName(code: string, lang: Lang): string {
   const key = `states.${code}`
   const teName = (te as Record<string, string | undefined>)[key]
   const enName = (en as Record<string, string>)[key]

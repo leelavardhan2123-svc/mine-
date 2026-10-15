@@ -1,7 +1,13 @@
 import { createContext } from 'react'
 import type { MessageKey } from './en.ts'
 
-export type Lang = 'en' | 'te'
+export const LANGS = ['en', 'hi', 'te', 'ta', 'bn', 'mr', 'gu', 'kn', 'ml', 'pa', 'or'] as const
+
+export type Lang = (typeof LANGS)[number]
+
+export function isLang(value: string | null): value is Lang {
+  return Boolean(value && (LANGS as readonly string[]).includes(value))
+}
 
 export type I18nValue = {
   lang: Lang

@@ -1,8 +1,8 @@
-# AGENTS.md — Sahayak (INNOHACKS 2.0)
+# AGENTS.md — Sahara (INNOHACKS 2.0)
 
 Citizen-facing Indian government scheme discovery app: guided questionnaire →
 deterministic eligibility engine → explainable receipts, scheme passport,
-document readiness, Telugu-first i18n, AI explainer, family benefit map,
+document readiness, 11-language i18n, AI explainer, family benefit map,
 offline-lite, admin overlay. User: **leelavardhan**, beginner — explain simply.
 
 ## Commands
@@ -19,7 +19,9 @@ offline-lite, admin overlay. User: **leelavardhan**, beginner — explain simply
   `strong | possible | needs-info | not-matching`; `manual-verify` rules always unknown
 - Data: `src/data/schemes/central.ts` (19) + `central-more.ts` (30, total 49 central) +
   `states.ts` (16), `src/data/questions.ts`, `src/data/documents.ts`;
-  all en + te strings live in `src/i18n/en.ts` / `te.ts`
+  all en + te strings live in `src/i18n/en.ts` / `te.ts`; hi/ta/bn/mr/gu/kn/ml/pa/or
+  are core-subset dicts that fall back to en per key (`I18nProvider` `?? en[key]`);
+  keep the storage prefix `sahayak:` (old data continuity) even though the brand is Sahara
 - Storage prefix `sahayak:` via `src/services/storage.ts`; AI key only server-side
   (`api/explain.ts`, `AI_API_KEY`); admin token via `VITE_ADMIN_TOKEN` (min 8 chars)
 - Node test files import `*.ts` paths explicitly (`allowImportingTsExtensions`); `rg`

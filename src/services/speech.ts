@@ -1,8 +1,22 @@
-export function speakText(
-  text: string,
-  lang: 'en-IN' | 'te-IN' = 'en-IN',
-  onEnd?: () => void,
-): boolean {
+const VOICE_TAGS: Record<string, string> = {
+  en: 'en-IN',
+  hi: 'hi-IN',
+  te: 'te-IN',
+  ta: 'ta-IN',
+  bn: 'bn-IN',
+  mr: 'mr-IN',
+  gu: 'gu-IN',
+  kn: 'kn-IN',
+  ml: 'ml-IN',
+  pa: 'pa-IN',
+  or: 'or-IN',
+}
+
+export function voiceTagFor(lang: string): string {
+  return VOICE_TAGS[lang] ?? 'en-IN'
+}
+
+export function speakText(text: string, lang: string = 'en-IN', onEnd?: () => void): boolean {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false
   try {
     window.speechSynthesis.cancel()
@@ -50,7 +64,7 @@ export function voiceInputSupported(): boolean {
 }
 
 export function startVoiceInput(options: {
-  lang: 'en-IN' | 'te-IN'
+  lang: string
   onResult: (text: string) => void
   onEnd?: () => void
   onError?: () => void

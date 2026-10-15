@@ -5,8 +5,10 @@ import AssistantWidget from '../components/AssistantWidget.tsx'
 import { navigate } from '../hooks/useHashRoute.ts'
 import { useInclusiveMode, useOnline } from '../hooks/useApp.ts'
 import { useI18n } from '../i18n/useI18n.ts'
+import { LANGS } from '../i18n/context.ts'
+import type { Lang } from '../i18n/context.ts'
 import { clearAllSahayakData } from '../services/storage.ts'
-import { speakText, speechSupported } from '../services/speech.ts'
+import { speakText, speechSupported, voiceTagFor } from '../services/speech.ts'
 
 const NAV_ITEMS: { to: string; key: 'nav.home' | 'nav.discover' | 'nav.directory' | 'nav.passport' | 'nav.family' | 'nav.about' }[] = [
   { to: '/', key: 'nav.home' },
@@ -20,28 +22,19 @@ const NAV_ITEMS: { to: string; key: 'nav.home' | 'nav.discover' | 'nav.directory
 function LangSwitcher() {
   const { lang, setLang, t } = useI18n()
   return (
-    <div
-      className="flex items-center rounded-full border border-line bg-white p-0.5 text-xs font-semibold"
-      role="group"
+    <select
+      id="lang-switch"
       aria-label={t('lang.label')}
+      value={lang}
+      onChange={(event) => setLang(event.target.value as Lang)}
+      className="max-w-[7.5rem] cursor-pointer rounded-full border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-navy transition hover:border-navy focus:outline-none focus-visible:ring-2 focus-visible:ring-info/40"
     >
-      <button
-        type="button"
-        onClick={() => setLang('en')}
-        aria-pressed={lang === 'en'}
-        className={`rounded-full px-2.5 py-1 transition ${lang === 'en' ? 'bg-navy text-white' : 'text-muted hover:text-navy'}`}
-      >
-        EN
-      </button>
-      <button
-        type="button"
-        onClick={() => setLang('te')}
-        aria-pressed={lang === 'te'}
-        className={`rounded-full px-2.5 py-1 transition ${lang === 'te' ? 'bg-navy text-white' : 'text-muted hover:text-navy'}`}
-      >
-        తె
-      </button>
-    </div>
+      {LANGS.map((code) => (
+        <option key={code} value={code}>
+          {t(`lang.${code}` as 'lang.en')}
+        </option>
+      ))}
+    </select>
   )
 }
 
@@ -66,7 +59,7 @@ export default function AppShell({
   children: ReactNode
   activePath: string
 }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const [menuOpen, setMenuOpen] = useState(false)
   const [inclusive, setInclusive] = useInclusiveMode()
 
@@ -227,7 +220,7 @@ export default function AppShell({
               <button
                 type="button"
                 className="text-muted underline-offset-4 hover:underline"
-                onClick={() => speakText(t('app.description'), 'en-IN')}
+                onClick={() => speakText(t('app.description'), voiceTagFor(lang))}
               >
                 {t('a11y.speak')}
               </button>

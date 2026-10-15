@@ -1,5 +1,5 @@
 export const en = {
-  'app.name': 'Sahayak',
+  'app.name': 'Sahara',
   'app.tagline': 'Every eligible citizen deserves to know.',
   'app.description':
     'Discover government schemes that may fit your life, understand the rules in your language, and take your next step with confidence.',
@@ -17,7 +17,16 @@ export const en = {
 
   'lang.label': 'Language',
   'lang.en': 'English',
+  'lang.hi': 'हिन्दी',
   'lang.te': 'తెలుగు',
+  'lang.ta': 'தமிழ்',
+  'lang.bn': 'বাংলা',
+  'lang.mr': 'मराठी',
+  'lang.gu': 'ગુજરાતી',
+  'lang.kn': 'ಕನ್ನಡ',
+  'lang.ml': 'മലയാളം',
+  'lang.pa': 'ਪੰਜਾਬੀ',
+  'lang.or': 'ଓଡ଼ିଆ',
 
   'a11y.inclusive': 'Inclusive mode',
   'a11y.inclusiveOn': 'Inclusive mode is on — larger text and extra contrast.',
@@ -34,7 +43,7 @@ export const en = {
 
   'privacy.title': 'Privacy first',
   'privacy.body':
-    'Your answers stay on this device. Sahayak never asks for Aadhaar numbers, OTPs, bank credentials or identity documents, and nothing is uploaded to a server.',
+    'Your answers stay on this device. Sahara never asks for Aadhaar numbers, OTPs, bank credentials or identity documents, and nothing is uploaded to a server.',
   'privacy.clear': 'Clear my data',
   'privacy.cleared': 'All data saved on this device has been cleared.',
   'privacy.clearConfirm':
@@ -42,10 +51,10 @@ export const en = {
   'privacy.savedLocal': 'Saved only on this device',
 
   'footer.disclaimer':
-    'Sahayak is an independent assistance platform built for the INNOHACKS 2.0 challenge. It is not a government authority and does not approve benefits.',
+    'Sahara is an independent assistance platform built for the INNOHACKS 2.0 challenge. It is not a government authority and does not approve benefits.',
   'footer.sources': 'Scheme details come from official government portals; each record shows its source and last-verified date.',
   'footer.notOfficial':
-    'An assessment from Sahayak is a preliminary informational check — only the concerned department can confirm eligibility.',
+    'An assessment from Sahara is a preliminary informational check — only the concerned department can confirm eligibility.',
   'footer.about': 'About & trust',
 
   'home.hero.headline': 'Government benefits should never be out of reach.',
@@ -55,9 +64,9 @@ export const en = {
   'home.hero.ctaSecondary': 'Explore government schemes',
   'home.hero.preview': 'A 60-second discovery',
   'home.hero.previewNote':
-    'Answer a few questions in plain language. Sahayak checks them against structured eligibility rules from official sources and explains every result.',
+    'Answer a few questions in plain language. Sahara checks them against structured eligibility rules from official sources and explains every result.',
 
-  'home.how.title': 'How Sahayak helps',
+  'home.how.title': 'How Sahara helps',
   'home.how.step1.title': '1. Tell us about your life',
   'home.how.step1.body':
     'State, age, work, income range and a few situation questions. Skip anything you would rather not share.',
@@ -80,7 +89,7 @@ export const en = {
   'home.trust.point2':
     'Each record carries a verification status and last-verified date — outdated records are flagged, never hidden.',
   'home.trust.point3':
-    'Where a condition cannot be checked from your answers (land records, beneficiary lists), Sahayak says so instead of guessing.',
+    'Where a condition cannot be checked from your answers (land records, beneficiary lists), Sahara says so instead of guessing.',
   'home.trust.point4':
     'No account is needed. Your passport and profiles stay in your browser.',
 
@@ -89,7 +98,7 @@ export const en = {
   'home.metrics.saved': 'Schemes saved',
   'home.metrics.docs': 'Documents marked ready',
   'home.metrics.note':
-    'These are real counters of your own activity in this browser. Sahayak collects no analytics and shows no fabricated impact numbers.',
+    'These are real counters of your own activity in this browser. Sahara collects no analytics and shows no fabricated impact numbers.',
 
   'directory.title': 'Government scheme directory',
   'directory.subtitle': 'Search every scheme in the catalogue with its official source.',
@@ -227,7 +236,7 @@ export const en = {
   'doc.purpose': 'Why you need it',
   'doc.officialInfo': 'Official information',
   'doc.noUpload':
-    'Sahayak never asks you to upload Aadhaar cards, bank statements or certificates. Tick the box only after you physically hold the document.',
+    'Sahara never asks you to upload Aadhaar cards, bank statements or certificates. Tick the box only after you physically hold the document.',
   'doc.uncertainty':
     'Some documents depend on how the local office applies the rules — confirm with the official source.',
 
@@ -248,7 +257,7 @@ export const en = {
   'passportStatus.completed': 'Completed',
   'passportStatus.needs-follow-up': 'Needs follow-up',
   'passport.statusNote':
-    'These statuses are yours to manage. Sahayak cannot read your government application status.',
+    'These statuses are yours to manage. Sahara cannot read your government application status.',
   'passport.remove': 'Remove',
 
   'family.title': 'Family benefit map',
@@ -266,7 +275,7 @@ export const en = {
   'family.results': 'See matches',
   'family.editAnswers': 'Edit answers',
   'family.warning':
-    'Profiles are matched separately. Sahayak does not combine benefits or claim two schemes can be received together — exclusions may apply, so verify with the departments.',
+    'Profiles are matched separately. Sahara does not combine benefits or claim two schemes can be received together — exclusions may apply, so verify with the departments.',
   'family.privacyNote': 'Profiles never leave this device.',
   'family.member.student': 'Student',
   'family.member.farmer': 'Farmer',
@@ -285,12 +294,14 @@ export const en = {
   'compare.vs': 'versus',
 
   'ai.title': 'Ask about schemes',
+  'ai.heroSub':
+    'Ask anything about government schemes — eligibility, documents, benefits or how to apply. Answers come from verified scheme records, in your language.',
   'ai.placeholder': 'e.g. What documents does this scheme need?',
   'ai.send': 'Ask',
   'ai.grounded': 'Grounded in scheme records',
   'ai.aiAssisted': 'AI-assisted answer',
   'ai.offlineAnswer':
-    'No AI service is configured, so Sahayak answered from the scheme records themselves. Every claim links its source.',
+    'No AI service is configured, so Sahara answered from the scheme records themselves. Every claim links its source.',
   'ai.disclaimer':
     'Answers are informational. They never approve benefits and always defer to the official source.',
   'ai.thinking': 'Thinking…',
@@ -300,7 +311,7 @@ export const en = {
 
   'admin.title': 'Administration',
   'admin.notConfigured':
-    'Admin access is not configured for this deployment. Set the VITE_ADMIN_TOKEN environment variable and rebuild — Sahayak ships with no default credentials.',
+    'Admin access is not configured for this deployment. Set the VITE_ADMIN_TOKEN environment variable and rebuild — Sahara ships with no default credentials.',
   'admin.localOnly':
     'This admin area edits a local overlay in your browser only. In production, record changes must go through a server with real authorization.',
   'admin.passphrase': 'Admin passphrase',
@@ -388,22 +399,22 @@ export const en = {
   'states.WB': 'West Bengal',
   'states.OTHER': 'Other / not listed',
 
-  'about.title': 'About Sahayak',
+  'about.title': 'About Sahara',
   'about.mission':
-    'Sahayak exists to answer five questions: which schemes may be relevant to you, why you might qualify, what information is missing, which documents to prepare, and what official step to take next.',
+    'Sahara exists to answer five questions: which schemes may be relevant to you, why you might qualify, what information is missing, which documents to prepare, and what official step to take next.',
   'about.notGovt':
-    'Sahayak is not a government body. It does not accept applications, cannot approve benefits and is not affiliated with any ministry. Applications must always be made through the official channels linked in each record.',
+    'Sahara is not a government body. It does not accept applications, cannot approve benefits and is not affiliated with any ministry. Applications must always be made through the official channels linked in each record.',
   'about.howMatching':
-    'Matching is deterministic: your answers are evaluated against structured rules recorded from official sources. Sahayak never uses random scores or popularity-based recommendations.',
+    'Matching is deterministic: your answers are evaluated against structured rules recorded from official sources. Sahara never uses random scores or popularity-based recommendations.',
   'about.data':
     'Scheme records are maintained in this application with a source URL, verification status and last-verified date. Where a record could not be re-verified recently, it is flagged rather than presented as current.',
   'about.privacyLink': 'Privacy & data',
-  'about.contact': 'Built for INNOHACKS 2.0 by team Sahayak.',
+  'about.contact': 'Built for INNOHACKS 2.0 by team Sahara.',
 
-  'assistant.name': 'Sahayak AI',
+  'assistant.name': 'Sahara AI',
   'assistant.greeting':
-    'Hello! I am the Sahayak AI assistant. Ask me about any government scheme — what it is, who it is for, benefits, documents or how to apply. I answer only from the verified scheme records in this catalogue.',
-  'assistant.open': 'Open Sahayak AI assistant',
+    'Hello! I am the Sahara AI assistant. Ask me about any government scheme — what it is, who it is for, benefits, documents or how to apply. I answer only from the verified scheme records in this catalogue.',
+  'assistant.open': 'Open Sahara AI assistant',
   'assistant.close': 'Close assistant',
   'assistant.placeholder': 'Ask about a scheme…',
   'assistant.send': 'Send',
@@ -413,7 +424,7 @@ export const en = {
   'assistant.chipMatches': 'Schemes for me',
   'assistant.chipAsk': 'What is PM-KISAN?',
   'assistant.chipApply': 'How do I apply?',
-  'assistant.chipAbout': 'What is Sahayak?',
+  'assistant.chipAbout': 'What is Sahara?',
   'assistant.noAnswers':
     'You have not completed the questionnaire yet, so I cannot match schemes to your profile.',
   'assistant.noAnswersHint': 'Answer a few questions and I will list schemes that may fit you.',
