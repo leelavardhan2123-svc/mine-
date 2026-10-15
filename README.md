@@ -2,7 +2,7 @@
 
 **Every eligible citizen deserves to know.**
 
-**Live website:** https://leelavardhan2123-svc.github.io/mine-/
+**Live website:** https://leelavardhan2123-svc.github.io/sahara/
 
 Sahara is a citizen-facing discovery app for Indian government schemes, built for
 the INNOHACKS 2.0 challenge. Answer a short guided questionnaire and get:
@@ -128,7 +128,7 @@ src/
 ## Deploy
 
 **GitHub Pages** (already wired): push to `main` → `.github/workflows/deploy.yml`
-builds and publishes. `vite.config.ts` keeps `base: '/mine-/'` for Pages.
+builds and publishes. `vite.config.ts` keeps `base: '/sahara/'` for Pages.
 
 **Vercel**: import the repo; `VERCEL=1` switches the base to `/` automatically,
 and `api/explain.ts` deploys as a serverless function (set `AI_API_KEY`).

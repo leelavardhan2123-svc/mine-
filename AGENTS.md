@@ -30,11 +30,11 @@ offline-lite, admin overlay. User: **leelavardhan**, beginner — explain simply
 ## Honesty rules (do not break)
 - No fabricated schemes/URLs/amounts/deadlines; keep verification statuses truthful
 - Never claim government affiliation or approvals; footer/about disclaimers stay
-- Vite `base` must stay `'/mine-/'` for GitHub Pages; `VERCEL=1` switches to `/`
+- Vite `base` must match the GitHub Pages project name (`'/sahara/'`); `VERCEL=1` switches to `/`
 
 ## Git + GitHub (set up — do NOT re-authenticate)
-- Repo: `https://github.com/leelavardhan2123-svc/mine-` (public, branch `main`)
+- Repo: `https://github.com/leelavardhan2123-svc/sahara` (public, branch `main`)
 - Plain `git add/commit/push` works (credentials in Windows Credential Manager);
   gh CLI at `%LOCALAPPDATA%\Programs\gh\bin\gh.exe`, logged in as `leelavardhan2123-svc`
-- Push to `main` → GitHub Actions deploys Pages → https://leelavardhan2123-svc.github.io/mine-/
+- Push to `main` → GitHub Actions deploys Pages → https://leelavardhan2123-svc.github.io/sahara/
 - **Do not push or modify GitHub until the user explicitly says so**
