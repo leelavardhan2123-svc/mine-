@@ -1,5 +1,5 @@
 {
-  "name": "forever-with-you",
+  "name": "sahayak",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -8,9 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "smoke": "node scripts/smoke-test.mjs",
-    "generate:gallery": "node scripts/generate-gallery.mjs",
-    "generate:music": "node scripts/generate-music.mjs"
+    "test:engine": "node --test tests/engine.test.ts",
+    "smoke": "node scripts/smoke-test.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

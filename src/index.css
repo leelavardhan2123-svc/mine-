@@ -1,31 +1,34 @@
 @import "tailwindcss";
 
-/* ── Custom theme tokens (linked to the colours in src/config/site.ts) ── */
-@theme inline {
-  --color-love-primary: var(--love-primary);
-  --color-love-secondary: var(--love-secondary);
-  --color-love-accent: var(--love-accent);
-  --color-love-blush: var(--love-blush);
-  --color-love-cream: var(--love-cream);
-  --color-love-lavender: var(--love-lavender);
-  --color-love-ink: var(--love-ink);
+@theme {
+  --color-ivory: #fbf7f0;
+  --color-ivory-deep: #f4ecdd;
+  --color-navy: #0e1b33;
+  --color-navy-soft: #1e2f52;
+  --color-ink: #16233d;
+  --color-muted: #59668a;
+  --color-saffron: #d9741c;
+  --color-saffron-deep: #b35c12;
+  --color-saffron-soft: #fbeeda;
+  --color-emerald: #0d6e4c;
+  --color-emerald-soft: #e2f3eb;
+  --color-line: #e4dac6;
+  --color-card: #ffffff;
+  --color-danger: #a5281b;
+  --color-danger-soft: #fbe9e5;
+  --color-info: #1a5a9e;
+  --color-info-soft: #e8f1fb;
+  --color-warn: #8a5a00;
+  --color-warn-soft: #fdf1d8;
 
-  --font-script: "Great Vibes", "Segoe Script", cursive;
-  --font-serif: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", "Noto Sans Telugu", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "Noto Sans Telugu", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* Default palette — overwritten at runtime from the config file */
 :root {
-  --love-primary: #be123c;
-  --love-secondary: #e11d48;
-  --love-accent: #a78bfa;
-  --love-blush: #ffe4e9;
-  --love-cream: #fff8f0;
-  --love-lavender: #ede9fe;
-  --love-ink: #411223;
-
   color-scheme: light;
+  --inclusive-scale: 1;
 }
 
 html {
@@ -35,209 +38,264 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: var(--font-serif);
-  color: var(--love-ink);
-  background-color: var(--love-cream);
+  font-family: var(--font-sans);
+  font-size: calc(1rem * var(--inclusive-scale));
+  color: var(--color-ink);
+  background-color: var(--color-ivory);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+}
+
+[data-inclusive="on"] {
+  --inclusive-scale: 1.12;
+}
+
+[data-inclusive="on"] .card {
+  border-width: 2px;
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--love-secondary) 30%, white);
-  color: var(--love-ink);
+  background: color-mix(in oklab, var(--color-saffron) 28%, white);
+  color: var(--color-navy);
 }
 
 :focus-visible {
-  outline: 2px solid var(--love-primary);
-  outline-offset: 3px;
-  border-radius: 4px;
+  outline: 2px solid var(--color-navy);
+  outline-offset: 2px;
 }
 
-/* ── Reusable pieces ─────────────────────────────────────────── */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  color: var(--color-navy);
+  letter-spacing: -0.01em;
+}
 
-.glass {
-  background: color-mix(in oklab, white 66%, transparent);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid color-mix(in oklab, white 70%, var(--love-primary));
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
   box-shadow:
-    0 10px 40px -18px color-mix(in oklab, var(--love-primary) 45%, transparent),
-    inset 0 1px 0 color-mix(in oklab, white 80%, transparent);
+    0 1px 2px rgba(14, 27, 51, 0.04),
+    0 14px 34px -22px rgba(14, 27, 51, 0.35);
 }
 
-.paper {
+.card-flat {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.7rem 1.35rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+  text-decoration: none;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-navy);
+  color: #fff;
+  box-shadow: 0 10px 24px -14px rgba(14, 27, 51, 0.9);
+}
+
+.btn-primary:hover {
+  background: var(--color-navy-soft);
+}
+
+.btn-accent {
+  background: var(--color-saffron);
+  color: #fff;
+  box-shadow: 0 10px 24px -14px rgba(217, 116, 28, 0.9);
+}
+
+.btn-accent:hover {
+  background: var(--color-saffron-deep);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-navy);
+  border-color: color-mix(in oklab, var(--color-navy) 35%, white);
+}
+
+.btn-outline:hover {
+  background: color-mix(in oklab, var(--color-navy) 6%, white);
+}
+
+.btn-quiet {
+  background: transparent;
+  color: var(--color-muted);
+  border-color: transparent;
+  padding-inline: 0.75rem;
+}
+
+.btn-quiet:hover {
+  color: var(--color-navy);
+  background: color-mix(in oklab, var(--color-navy) 5%, white);
+}
+
+.btn-sm {
+  padding: 0.42rem 0.9rem;
+  font-size: 0.82rem;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--color-navy);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.choice:hover {
+  border-color: color-mix(in oklab, var(--color-navy) 30%, white);
+}
+
+.choice[data-selected="true"] {
+  border-color: var(--color-navy);
+  background: color-mix(in oklab, var(--color-navy) 5%, white);
+  box-shadow: inset 0 0 0 1px var(--color-navy);
+}
+
+.choice[data-tone="muted"][data-selected="true"] {
+  border-color: var(--color-muted);
+  background: color-mix(in oklab, var(--color-muted) 7%, white);
+  box-shadow: inset 0 0 0 1px var(--color-muted);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.22rem 0.7rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.pill-emerald {
+  background: var(--color-emerald-soft);
+  color: var(--color-emerald);
+  border-color: color-mix(in oklab, var(--color-emerald) 25%, white);
+}
+
+.pill-saffron {
+  background: var(--color-saffron-soft);
+  color: var(--color-saffron-deep);
+  border-color: color-mix(in oklab, var(--color-saffron) 25%, white);
+}
+
+.pill-navy {
+  background: color-mix(in oklab, var(--color-navy) 8%, white);
+  color: var(--color-navy);
+  border-color: color-mix(in oklab, var(--color-navy) 18%, white);
+}
+
+.pill-danger {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 22%, white);
+}
+
+.pill-muted {
+  background: color-mix(in oklab, var(--color-muted) 10%, white);
+  color: var(--color-muted);
+  border-color: color-mix(in oklab, var(--color-muted) 20%, white);
+}
+
+.pill-warn {
+  background: var(--color-warn-soft);
+  color: var(--color-warn);
+  border-color: color-mix(in oklab, var(--color-warn) 25%, white);
+}
+
+.surface-warm {
   background:
-    linear-gradient(
-      160deg,
-      color-mix(in oklab, var(--love-cream) 92%, white),
-      color-mix(in oklab, var(--love-blush) 55%, white)
-    );
-  border: 1px solid color-mix(in oklab, var(--love-primary) 18%, white);
-  box-shadow: 0 24px 60px -30px color-mix(in oklab, var(--love-primary) 60%, transparent);
+    radial-gradient(1200px 420px at 12% -8%, color-mix(in oklab, var(--color-saffron) 12%, transparent), transparent 60%),
+    radial-gradient(900px 380px at 88% 0%, color-mix(in oklab, var(--color-emerald) 10%, transparent), transparent 55%),
+    linear-gradient(180deg, var(--color-ivory) 0%, var(--color-ivory-deep) 100%);
 }
 
-.glow-ring {
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--love-primary) 25%, transparent),
-    0 10px 35px -10px color-mix(in oklab, var(--love-secondary) 65%, transparent),
-    0 0 60px -12px color-mix(in oklab, var(--love-secondary) 55%, transparent);
+.rule-dashed {
+  border-top: 1px dashed var(--color-line);
 }
 
-.text-shadow-soft {
-  text-shadow: 0 2px 24px color-mix(in oklab, var(--love-secondary) 35%, transparent);
+.print-only {
+  display: none;
 }
 
-/* ── Keyframes ───────────────────────────────────────────────── */
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.15;
-    transform: scale(0.8);
+@media print {
+  body {
+    background: #fff;
   }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.15);
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  .card {
+    box-shadow: none;
+    border-color: #ccc;
+    break-inside: avoid;
   }
 }
-
-@keyframes float-up {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 10vh, 0) rotate(-8deg) scale(0.9);
-  }
-  12% {
-    opacity: var(--heart-opacity, 0.5);
-  }
-  85% {
-    opacity: var(--heart-opacity, 0.5);
-  }
-  100% {
-    opacity: 0;
-    transform: translate3d(var(--drift, 20px), -105vh, 0) rotate(14deg) scale(1.05);
-  }
-}
-
-@keyframes petal-fall {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, -8vh, 0) rotate(0deg);
-  }
-  10% {
-    opacity: 0.7;
-  }
-  90% {
-    opacity: 0.55;
-  }
-  100% {
-    opacity: 0;
-    transform: translate3d(var(--drift, 60px), 108vh, 0) rotate(420deg);
-  }
-}
-
-@keyframes blob-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(4vw, -3vh, 0) scale(1.12);
-  }
-}
-
-@keyframes heartbeat {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  14% {
-    transform: scale(1.14);
-  }
-  28% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.09);
-  }
-  56% {
-    transform: scale(1);
-  }
-}
-
-@keyframes caret-blink {
-  0%,
-  45% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes equalizer {
-  0%,
-  100% {
-    transform: scaleY(0.35);
-  }
-  50% {
-    transform: scaleY(1);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* ── Animation utilities ─────────────────────────────────────── */
-
-.animate-twinkle {
-  animation: twinkle var(--tw, 4s) ease-in-out infinite;
-}
-
-.float-heart {
-  animation: float-up var(--dur, 18s) linear infinite;
-}
-
-.float-petal {
-  animation: petal-fall var(--dur, 26s) linear infinite;
-}
-
-.animate-blob {
-  animation: blob-drift var(--dur, 26s) ease-in-out infinite;
-}
-
-.animate-heartbeat {
-  animation: heartbeat 1.6s ease-in-out infinite;
-}
-
-.animate-caret {
-  animation: caret-blink 1s step-end infinite;
-}
-
-.animate-equalizer {
-  animation: equalizer var(--speed, 0.9s) ease-in-out infinite;
-  transform-origin: bottom;
-}
-
-.animate-shimmer {
-  background-image: linear-gradient(
-    100deg,
-    transparent 20%,
-    color-mix(in oklab, white 70%, transparent) 45%,
-    transparent 70%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 3.2s linear infinite;
-}
-
-/* ── Reduced motion ──────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   html {

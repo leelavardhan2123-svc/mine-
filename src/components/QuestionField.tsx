@@ -1,0 +1,159 @@
+import { useId } from 'react'
+import { HelpCircle } from 'lucide-react'
+import type { Question } from '../data/questions.ts'
+import { STATE_CODES } from '../data/types.ts'
+import type { AnswerValue } from '../data/types.ts'
+import { useI18n } from '../i18n/useI18n.ts'
+import { SpeakButton } from './ui/index.tsx'
+
+export function QuestionField({
+  question,
+  value,
+  onChange,
+  error,
+}: {
+  question: Question
+  value: AnswerValue | undefined
+  onChange: (value: AnswerValue | undefined) => void
+  error?: string
+}) {
+  const { t, pick } = useI18n()
+  const groupId = useId()
+  const label = pick(question.label)
+  const help = question.help ? pick(question.help) : undefined
+  const why = question.why ? pick(question.why) : undefined
+
+  const renderPreferNot = () => {
+    if (!question.preferNotToSay) return null
+    const selected = value === undefined
+    return (
+      <button
+        type="button"
+        className="choice mt-2"
+        data-selected={selected}
+        data-tone="muted"
+        onClick={() => onChange(undefined)}
+      >
+        <span className="mt-0.5 size-4 shrink-0 rounded-full border border-muted" aria-hidden />
+        <span className="text-sm text-muted">{t('discover.preferNot')}</span>
+      </button>
+    )
+  }
+
+  return (
+    <fieldset className="space-y-3" aria-describedby={`${groupId}-help`}>
+      <legend className="font-display text-lg font-semibold text-navy sm:text-xl">
+        {label}
+        {question.skippable && (
+          <span className="ml-2 text-xs font-medium text-muted">({t('common.optional')})</span>
+        )}
+      </legend>
+
+      {(help || why) && (
+        <div className="flex flex-wrap items-start gap-2 text-sm leading-relaxed text-muted">
+          <HelpCircle size={15} className="mt-0.5 shrink-0" aria-hidden />
+          <p id={`${groupId}-help`}>
+            {why && (
+              <>
+                <span className="font-semibold text-navy">{t('discover.whyWeAsk')}: </span>
+                {why}{' '}
+              </>
+            )}
+            {help}
+          </p>
+          <SpeakButton text={`${label}. ${why ?? ''} ${help ?? ''}`.trim()} />
+        </div>
+      )}
+
+      {question.kind === 'state' && (
+        <select
+          className="input"
+          value={typeof value === 'string' ? value : ''}
+          onChange={(event) => onChange(event.target.value || undefined)}
+        >
+          <option value="">{t('discover.statePlaceholder')}</option>
+          {STATE_CODES.map((code) => (
+            <option key={code} value={code}>
+              {t(`states.${code}` as 'states.AP')}
+            </option>
+          ))}
+        </select>
+      )}
+
+      {question.kind === 'text' && (
+        <input
+          className="input"
+          type="text"
+          value={typeof value === 'string' ? value : ''}
+          onChange={(event) => onChange(event.target.value || undefined)}
+          placeholder={t('discover.skip')}
+        />
+      )}
+
+      {question.kind === 'number' && (
+        <div className="flex items-center gap-3">
+          <input
+            className="input max-w-[10rem]"
+            type="number"
+            inputMode="decimal"
+            min={question.min}
+            max={question.max}
+            value={typeof value === 'number' ? value : ''}
+            onChange={(event) => {
+              const raw = event.target.value
+              if (raw === '') return onChange(undefined)
+              const parsed = Number(raw)
+              onChange(Number.isNaN(parsed) ? undefined : parsed)
+            }}
+            aria-invalid={Boolean(error)}
+          />
+          {question.suffix && <span className="text-sm text-muted">{pick(question.suffix)}</span>}
+        </div>
+      )}
+
+      {question.kind === 'boolean' && (
+        <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-labelledby={groupId}>
+          <button
+            type="button"
+            className="choice"
+            data-selected={value === true}
+            onClick={() => onChange(true)}
+          >
+            <span className="mt-0.5 size-4 shrink-0 rounded-full border border-navy" aria-hidden />
+            <span className="font-medium">{t('common.yes')}</span>
+          </button>
+          <button
+            type="button"
+            className="choice"
+            data-selected={value === false}
+            onClick={() => onChange(false)}
+          >
+            <span className="mt-0.5 size-4 shrink-0 rounded-full border border-navy" aria-hidden />
+            <span className="font-medium">{t('common.no')}</span>
+          </button>
+        </div>
+      )}
+
+      {question.kind === 'single' && question.options && (
+        <div className="grid gap-2" role="radiogroup" aria-labelledby={groupId}>
+          {question.options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className="choice"
+              data-selected={value === option.value}
+              onClick={() => onChange(option.value)}
+            >
+              <span className="mt-0.5 size-4 shrink-0 rounded-full border border-navy" aria-hidden />
+              <span className="font-medium">{pick(option.label)}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {renderPreferNot()}
+
+      {error && <p className="text-sm font-medium text-danger">{error}</p>}
+    </fieldset>
+  )
+}

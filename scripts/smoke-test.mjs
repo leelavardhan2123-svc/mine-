@@ -1,256 +1,130 @@
-/**
- * End-to-end smoke test for Forever With You ❤️
- *
- * Uses the system Microsoft Edge (no browser download needed).
- * Start the dev server first:  npm run dev
- * Then run:                    node scripts/smoke-test.mjs
- *
- * Verifies: no JS/console errors, every feature opens and closes,
- * keyboard controls work, preferences persist — and captures screenshots.
- */
-import { mkdirSync } from 'node:fs'
 import { chromium } from 'playwright-core'
 
-const EDGE =
-  process.env.EDGE_PATH ??
-  'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
-const BASE = process.env.BASE_URL ?? 'http://localhost:5173'
-const SHOTS = process.env.SHOTS_DIR ?? 'scripts/shots'
+const BASE = process.env.SMOKE_URL ?? 'http://localhost:4173'
+let passed = 0
+let failed = 0
+const failures = []
 
-mkdirSync(SHOTS, { recursive: true })
-
-const consoleErrors = []
-const pageErrors = []
-const results = []
-let failures = 0
-
-const pass = (name, ok, extra = '') => {
-  if (!ok) failures += 1
-  results.push(`${ok ? 'PASS' : 'FAIL'}  ${name}${extra ? ` — ${extra}` : ''}`)
+function check(name, ok, detail = '') {
+  if (ok) {
+    passed += 1
+    console.log(`  ✓ ${name}`)
+  } else {
+    failed += 1
+    failures.push(name)
+    console.log(`  ✗ ${name}${detail ? ` — ${detail}` : ''}`)
+  }
 }
 
-const browser = await chromium.launch({ executablePath: EDGE, headless: true })
-const context = await browser.newContext({
-  viewport: { width: 1440, height: 900 },
+const browser = await chromium.launch({
+  channel: 'msedge',
+  headless: true,
 })
-const page = await context.newPage()
-
+const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+const errors = []
+page.on('pageerror', (error) => errors.push(String(error)))
 page.on('console', (message) => {
-  if (message.type() === 'error') consoleErrors.push(message.text())
+  if (message.type() === 'error') errors.push(message.text())
 })
-page.on('pageerror', (error) => pageErrors.push(String(error)))
-
-const shot = async (name) => {
-  await page.screenshot({ path: `${SHOTS}/${name}.png` })
-  results.push(`shot  ${name}.png`)
-}
-
-const settle = (ms = 900) => page.waitForTimeout(ms)
 
 try {
-  /* ── Feature 1 · Welcome ─────────────────────────────────── */
-  await page.goto(BASE, { waitUntil: 'load', timeout: 30_000 })
-  await page.evaluate(() => document.fonts?.ready)
-  await settle(1200)
+  console.log(`Smoke testing ${BASE}`)
 
-  const heading = await page.locator('h1').first().textContent()
-  pass('welcome heading rendered', heading?.includes('Favorite Person'), heading)
-  await shot('01-welcome')
+  await page.goto(BASE, { waitUntil: 'networkidle' })
+  check('home loads', (await page.title()).toLowerCase().includes('sahayak'))
+  check('home shows tagline', await page.getByText('Every eligible citizen').first().isVisible())
+  check('language switch present', await page.locator('[role="group"] button[aria-pressed]').first().isVisible())
+  check('disclaimer visible', await page.getByText(/not a government authority/i).first().isVisible())
+  check('about entry point present', await page.getByRole('button', { name: /about/i }).first().isVisible())
 
-  await page.getByRole('button', { name: /Open Your Surprise/ }).click()
-  await settle(2400)
+  await page.getByRole('button', { name: /find schemes|discover|start/i }).first().click()
+  await page.waitForTimeout(400)
+  check('questionnaire opens', await page.getByText(/step|question/i).first().isVisible())
 
-  const opened = await page.evaluate(
-    () => localStorage.getItem('forever-with-you:opened') === 'true',
-  )
-  pass('welcome click opens experience + persists', opened)
-  await shot('02-intro')
-
-  const sections = await page.evaluate(() =>
-    ['story', 'letter', 'gallery', 'special', 'surprise', 'final'].filter(
-      (id) => !document.getElementById(id),
-    ),
-  )
-  pass('all sections exist', sections.length === 0, `missing: ${sections}`)
-
-  /* ── Feature 2 · Love story timeline ─────────────────────── */
-  await page.locator('#story').scrollIntoViewIfNeeded()
-  await settle(1100)
-  const milestoneCount = await page.locator('#story li').count()
-  pass('timeline shows 5 milestones', milestoneCount === 5, String(milestoneCount))
-  await shot('03-love-story')
-
-  /* ── Feature 3 · Envelope + letter ───────────────────────── */
-  await page.locator('#letter').scrollIntoViewIfNeeded()
-  await settle(800)
-  await page
-    .getByRole('button', { name: /Open the love letter/ })
-    .click()
-  await settle(1400)
-  const skip = page.getByRole('button', { name: /Skip the writing/ })
-  if (await skip.count()) await skip.click()
-  await settle(400)
-  const letterText = await page.locator('#letter article').textContent()
-  pass(
-    'letter opens and reveals full text',
-    (letterText ?? '').includes('You are someone truly special to me'),
-  )
-  pass(
-    'letter signature shown',
-    (letterText ?? '').includes('Forever yours'),
-  )
-  await shot('04-letter')
-
-  await page.getByRole('button', { name: /Close the letter/ }).click()
-  await settle(700)
-  pass(
-    'letter closes back to envelope',
-    (await page.getByRole('button', { name: /Open the love letter/ }).count()) === 1,
-  )
-
-  /* ── Feature 4 · Gallery + lightbox ──────────────────────── */
-  await page.locator('#gallery').scrollIntoViewIfNeeded()
-  await settle(1000)
-  const galleryButtons = await page
-    .getByRole('button', { name: /Open memory:/ })
-    .count()
-  pass('gallery renders photos', galleryButtons === 6, String(galleryButtons))
-  await shot('05-gallery')
-
-  await page.getByRole('button', { name: /Open memory:/ }).first().click()
-  await settle(700)
-  pass(
-    'lightbox opens',
-    (await page.getByRole('dialog').count()) === 1,
-  )
-  await shot('06-lightbox')
-  await page.keyboard.press('ArrowRight')
-  await settle(500)
-  await page.keyboard.press('Escape')
-  await settle(500)
-  pass('lightbox closes with Escape', (await page.getByRole('dialog').count()) === 0)
-
-  /* ── Feature 5 · Why you are special ─────────────────────── */
-  await page.locator('#special').scrollIntoViewIfNeeded()
-  await settle(900)
-  const card = page.getByRole('button', { name: /^Reveal reason 1/ })
-  await card.click()
-  await settle(1100)
-  pass(
-    'card flips on click',
-    (await page.getByRole('button', { name: /Hide reason/ }).count()) === 1,
-  )
-  const revealed = await page.evaluate(
-    () =>
-      JSON.parse(localStorage.getItem('forever-with-you:revealed') ?? '[]')
-        .length === 1,
-  )
-  pass('revealed card persists locally', revealed)
-  await shot('07-why-special')
-
-  /* ── Feature 6 · One last surprise ───────────────────────── */
-  await page.locator('#surprise').scrollIntoViewIfNeeded()
-  await settle(700)
-  await page.getByRole('button', { name: /One Last Surprise/ }).click()
-  await settle(1800)
-  const message = await page.getByRole('dialog').textContent()
-  pass(
-    'surprise message shown',
-    (message ?? '').includes('see yourself through my eyes'),
-  )
-  await shot('08-surprise')
-  await page.keyboard.press('Escape')
-  await settle(1200) // spring exit finishes ~600ms after the key press
-  pass('surprise closes with Escape', (await page.getByRole('dialog').count()) === 0)
-
-  /* ── Feature 7 · Music (manual start) ────────────────────── */
-  const play = page.getByRole('button', { name: 'Play music' })
-  pass('music player available', (await play.count()) === 1)
-  if (await play.count()) {
-    await play.click()
-    await settle(900)
-    const paused = await page.getByRole('button', { name: 'Pause music' }).count()
-    pass('music starts on click (no autoplay)', paused === 1)
-    if (paused) await page.getByRole('button', { name: 'Pause music' }).click()
+  const next = page.getByRole('button', { name: /next|continue/i }).first()
+  let stepsDone = 0
+  for (let i = 0; i < 6 && (await next.isVisible().catch(() => false)); i += 1) {
+    const choice = page.locator('.choice').first()
+    if (await choice.isVisible().catch(() => false)) await choice.click()
+    await next.click()
+    stepsDone += 1
+    await page.waitForTimeout(250)
   }
+  check('questionnaire advances', stepsDone >= 3, `only ${stepsDone} steps`)
 
-  /* ── Feature 9 · Final screen ────────────────────────────── */
-  await page.locator('#final').scrollIntoViewIfNeeded()
-  await settle(1100)
-  const finalText = await page.locator('#final').textContent()
-  pass(
-    'final message shown',
-    (finalText ?? '').includes("I'm glad ours is part of my life"),
-  )
-  await shot('09-final')
+  const resultsButton = page.getByRole('button', { name: /results|see matches/i }).first()
+  if (await resultsButton.isVisible().catch(() => false)) {
+    await resultsButton.click()
+    await page.waitForTimeout(500)
+  } else {
+    await page.goto(`${BASE}/#/results`, { waitUntil: 'networkidle' })
+  }
+  check('results page renders cards', await page.locator('.card').first().isVisible())
+  const radarPills = await page.locator('text=/strong|possible|needs info/i').count()
+  check('results show radar groups', radarPills > 0)
 
-  await page.getByRole('button', { name: /Revisit our memories/ }).click()
-  await settle(1400)
-  const atStory = await page.evaluate(() => {
-    const el = document.getElementById('story')
-    if (!el) return false
-    const rect = el.getBoundingClientRect()
-    return rect.top > -400 && rect.top < 400
-  })
-  pass('revisit button scrolls to memories', atStory)
+  await page.goto(`${BASE}/#/directory`, { waitUntil: 'networkidle' })
+  const cards = await page.locator('.card').count()
+  check('directory lists schemes', cards > 10, `only ${cards} cards`)
+  await page.getByPlaceholder(/search/i).fill('PM-KISAN')
+  await page.waitForTimeout(300)
+  const filtered = await page.locator('.card').count()
+  check('directory search filters', filtered > 0 && filtered < cards, `${filtered}/${cards}`)
 
-  /* ── Footer · start over ─────────────────────────────────── */
-  await page.locator('footer').scrollIntoViewIfNeeded()
-  await settle(600)
-  page.once('dialog', (dialog) => dialog.accept())
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'load', timeout: 15_000 }),
-    page.getByRole('button', { name: /Start over/ }).click(),
-  ])
-  await settle(600)
-  const cleared = await page.evaluate(
-    () => localStorage.getItem('forever-with-you:opened') !== 'true',
-  )
-  pass('start over clears saved preferences', cleared)
-  pass(
-    'start over returns to the welcome screen',
-    (await page.locator('h1').first().textContent())?.includes('Favorite Person'),
-  )
+  await page.goto(`${BASE}/#/scheme/pm-kisan`, { waitUntil: 'networkidle' })
+  check('scheme page renders', await page.getByText(/PM-KISAN/i).first().isVisible())
+  check('scheme shows official source', (await page.locator('a[target="_blank"][href^="http"]').count()) > 0)
+  check('scheme shows last verified', await page.getByText(/verified/i).first().isVisible())
 
-  /* ── Mobile pass ─────────────────────────────────────────── */
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto(BASE, { waitUntil: 'load' })
-  await page.evaluate(() => document.fonts?.ready)
-  await settle(1200)
-  await page.getByRole('button', { name: /Open Your Surprise/ }).click()
-  await settle(2400)
-  await shot('10-mobile-intro')
-  await page.locator('#story').scrollIntoViewIfNeeded()
-  await settle(900)
-  await shot('11-mobile-story')
-  await page.locator('#gallery').scrollIntoViewIfNeeded()
-  await settle(900)
-  await shot('12-mobile-gallery')
+  await page.goto(`${BASE}/#/receipt/pm-kisan`, { waitUntil: 'networkidle' })
+  check('receipt page renders', await page.locator('main').isVisible())
 
-  const hasHScroll = await page.evaluate(
-    () => document.documentElement.scrollWidth > window.innerWidth + 2,
-  )
-  pass('no horizontal overflow on mobile', !hasHScroll)
-} catch (error) {
-  failures += 1
-  results.push(`FAIL  unhandled error — ${error?.message ?? error}`)
+  await page.goto(`${BASE}/#/passport`, { waitUntil: 'networkidle' })
+  check('passport renders', await page.getByText(/passport|your schemes/i).first().isVisible())
+
+  await page.goto(`${BASE}/#/documents/pm-kisan`, { waitUntil: 'networkidle' })
+  const docToggles = page.locator('main button[aria-pressed]')
+  check('document checklist renders', (await docToggles.count()) > 0)
+  const firstDoc = docToggles.first()
+  const wasReady = await firstDoc.getAttribute('aria-pressed')
+  await firstDoc.click()
+  await page.waitForTimeout(200)
+  check('document readiness toggles', (await firstDoc.getAttribute('aria-pressed')) !== wasReady)
+
+  await page.goto(`${BASE}/#/family`, { waitUntil: 'networkidle' })
+  check('family map renders', await page.getByText(/family|member/i).first().isVisible())
+
+  await page.goto(`${BASE}/#/ask/pm-kisan`, { waitUntil: 'networkidle' })
+  check('ask page renders', await page.getByText(/ask|question/i).first().isVisible())
+
+  await page.goto(`${BASE}/#/compare`, { waitUntil: 'networkidle' })
+  check('compare page renders', await page.getByText(/compare/i).first().isVisible())
+
+  await page.goto(`${BASE}/#/about`, { waitUntil: 'networkidle' })
+  check('about page privacy note', await page.getByText(/stay on this device/i).first().isVisible())
+  check('about page not-government note', await page.getByText(/not a government body/i).first().isVisible())
+
+  const switcher = page.locator('[role="group"] button[aria-pressed]').first().locator('..')
+  const textBefore = await page.locator('main').innerText()
+  await switcher.locator('button').nth(1).click()
+  await page.waitForTimeout(300)
+  const textAfter = await page.locator('main').innerText()
+  check('telugu switch changes language', textAfter !== textBefore && textAfter.length > 0)
+  await switcher.locator('button').nth(0).click()
+  await page.waitForTimeout(300)
+  const textBack = await page.locator('main').innerText()
+  check('switch back to english', textBack === textBefore)
+
+  await page.goto(`${BASE}/#/admin`, { waitUntil: 'networkidle' })
+  check('admin without token is locked', await page.getByText(/passphrase|not configured/i).first().isVisible())
+
+  check('no console/page errors', errors.length === 0, errors.slice(0, 3).join(' | '))
 } finally {
-  /* ── Console health ──────────────────────────────────────── */
-  const realErrors = consoleErrors.filter(
-    (text) => !/net::ERR|Failed to load resource|fonts\./i.test(text),
-  )
-  pass('no JavaScript page errors', pageErrors.length === 0, pageErrors.join(' | '))
-  pass('no console errors', realErrors.length === 0, realErrors.join(' | '))
-  if (consoleErrors.length) {
-    results.push(`info  ${consoleErrors.length} network/resource note(s)`)
-  }
-
   await browser.close()
+}
 
-  console.log('\n──────── smoke test report ────────')
-  results.forEach((line) => console.log(line))
-  console.log(
-    `\n${failures === 0 ? 'ALL CHECKS PASSED' : `${failures} FAILURE(S)`} · screenshots in ${SHOTS}`,
-  )
-  process.exit(failures === 0 ? 0 : 1)
+console.log(`\n${passed} passed, ${failed} failed`)
+if (failed > 0) {
+  console.log(`Failures: ${failures.join(', ')}`)
+  process.exit(1)
 }

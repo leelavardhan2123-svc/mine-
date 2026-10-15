@@ -1,183 +1,131 @@
-# Forever With You ❤️
+# Sahayak
 
-A premium, interactive love letter — built as a website.
+**Every eligible citizen deserves to know.**
 
-It opens with a private welcome screen, then walks through your love story,
-a sealed letter that types itself out, a photo gallery, reasons she is
-special, a final surprise, and a closing message. Everything is animated,
-responsive, keyboard-accessible, and fully client-side.
+Sahayak is a citizen-facing discovery app for Indian government schemes, built for
+the INNOHACKS 2.0 challenge. Answer a short guided questionnaire and get:
 
-**Stack:** React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · Framer Motion · Lucide icons
+- **Eligibility matches** — a deterministic engine evaluates your answers against
+  structured rules recorded from official sources.
+- **An explainable receipt** — every match shows *why* it matched, what is still
+  missing, and where to verify (source URL + last-verified date).
+- **A document checklist** — tick off documents as you prepare them.
+- **A scheme passport** — saved matches, benefits and application channels.
+- **Telugu + English** — the whole UI switches language in one tap, with speak-aloud.
+- **Family benefit map** — see which schemes may fit each family member.
+- **Offline-lite** — a service worker keeps the shell usable without a network.
+
+Sahayak is **not** a government body. It does not accept applications and cannot
+approve benefits; every record links the official portal for the real step.
+
+**Stack:** React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · Framer Motion · Lucide
 
 ---
 
-## ▶ Run it locally
+## Run it locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the URL shown in the terminal (normally **http://localhost:5173**).
+Open **http://localhost:5173** (the dev server).
 
-Other commands:
+| Command              | What it does                                   |
+| -------------------- | ---------------------------------------------- |
+| `npm run dev`        | Start the dev server                           |
+| `npm run build`      | Type-check + production build into `dist/`     |
+| `npm run preview`    | Serve the production build locally             |
+| `npm run lint`       | Lint (oxlint) — keep it at zero warnings       |
+| `npm run test:engine`| 16 unit tests for the eligibility engine       |
+| `npm run smoke`      | 27 browser checks via Microsoft Edge (preview must be running) |
 
-| Command             | What it does                                  |
-| ------------------- | --------------------------------------------- |
-| `npm run dev`       | Start the dev server                          |
-| `npm run build`     | Type-check + production build into `dist/`    |
-| `npm run preview`   | Serve the production build locally            |
-| `npm run lint`      | Lint all source files                         |
-| `npm run smoke`     | Automated browser test (dev server must be up)|
-| `npm run generate:gallery` | Recreate the placeholder gallery images |
-| `npm run generate:music`    | Recreate the placeholder song loop      |
-
----
-
-## ✏️ Personalize everything (one file)
-
-**All content lives in [`src/config/site.ts`](src/config/site.ts).**
-You should not need to touch any other file.
-
-```ts
-myName: 'Your Name',          // you
-herName: 'My Love',           // her
-anniversary: '2023-02-14',    // drives the "days together" counter (YYYY-MM-DD)
-```
-
-| Section      | What you can change                                                        |
-| ------------ | -------------------------------------------------------------------------- |
-| `colors`     | 7 hex colours — repaints the whole site (primary, blush, lavender, ink…)   |
-| `welcome`    | Opening headline, subtitle and button                                       |
-| `intro`      | Hero title, subtitle, "days together" label                                 |
-| `story`      | 5 timeline milestones: date, title, description, icon                       |
-| `letter`     | The entire letter body, signature, envelope labels                          |
-| `gallery`    | Photo paths, captions and alt text for each memory                          |
-| `special`    | The flip cards: emoji, title and message                                    |
-| `surprise`   | Surprise button, heading and the final heartfelt message                    |
-| `music`      | Song file path and the player's labels                                      |
-| `final`      | Closing message, signature, privacy note, restart label                     |
-
-Save the file — the dev server hot-reloads instantly.
-
-### Swap in your photos
-
-1. Drop your images into `public/gallery/` (e.g. `us-1.jpg`).
-2. Point the config at them:
-
-```ts
-gallery: {
-  items: [
-    {
-      id: 'm1',
-      src: '/gallery/us-1.jpg',
-      caption: 'The day we met',
-      alt: 'Us at the café',
-    },
-    // ...
-  ],
-}
-```
-
-- Any image works (jpg, png, webp). Keep each photo **under ~500 KB** for
-  fast loading — free tools like [Squoosh](https://squoosh.app) help.
-- Missing files degrade gracefully: the card shows a "Add your photo"
-  placeholder instead of a broken image.
-
-### Add your song
-
-Put a licensed audio file at `public/audio/` and update `music.src`
-(default: `/audio/our-song.wav`). Details in
-[`public/audio/README.md`](public/audio/README.md).
-
-> The bundled track is an **original 16-second ambient loop generated by
-> `scripts/generate-music.mjs`** — royalty-free because we made it here.
-> Replace it with anything you both love and have the rights to share.
-
----
-
-## 💾 What is saved, and where
-
-The site uses `localStorage` **in her browser only**:
-
-| Key                       | Purpose                                    |
-| ------------------------- | ------------------------------------------ |
-| `forever-with-you:opened` | Remember the welcome screen was opened     |
-| `forever-with-you:letter` | Keep the letter open between visits        |
-| `forever-with-you:revealed` | Which "Why you are special" cards are open |
-| `forever-with-you:muted`  | Music mute preference                      |
-
-Nothing is uploaded anywhere — there is no backend, database, or API key.
-The "Start over" link in the footer clears these values.
-
----
-
-## ♿ Accessibility & motion
-
-- Every control is reachable and operable by keyboard (Tab, Enter/Space,
-  **Esc** closes overlays, **←/→** navigate the gallery).
-- Focus is trapped inside open dialogs and restored when they close.
-- `prefers-reduced-motion` is respected: floating hearts, twinkles,
-  typewriter and flips become instant/static.
-
----
-
-## 🧪 Verification
+Smoke test expects a server at `http://localhost:4173` (or set `SMOKE_URL`):
 
 ```bash
-npm run lint              # zero warnings
-npm run build             # type-check + production build
-npm run smoke             # 23 browser checks (with npm run dev running)
+npm run preview          # terminal 1
+npm run smoke            # terminal 2
 ```
-
-The smoke test drives real Microsoft Edge via Playwright: it opens every
-feature, exercises Escape/arrow keys, checks localStorage and the restart
-flow, verifies there are no console errors, and saves screenshots to
-`scripts/shots/`.
 
 ---
 
-## 🚀 Deploy & share the link
+## How matching works
 
-Build once with `npm run build`, then publish the `dist/` folder.
+- Each scheme in `src/data/schemes/` carries `rules[]` — typed, structured
+  conditions (age, income band, state, occupation, education, attributes…).
+- `src/engine/eligibility.ts` evaluates answers against those rules:
+  - a **required** rule fails → `not-matching`
+  - nothing matched → `insufficient` (questions are listed as missing)
+  - some required answers missing → `potential`
+  - otherwise → `likely`
+- Rules that must be checked by an office are `manual-verify` and always count as
+  unknown — Sahayak never pretends to know them.
+- Results sort strong matches first. No scores, no randomness, no popularity.
 
-**Vercel** (easiest)
-1. Push the project to GitHub.
-2. [vercel.com/new](https://vercel.com/new) → import the repo.
-3. Framework preset **Vite** → Deploy. You get a public URL like
-   `forever-with-you.vercel.app`.
-
-**Netlify**
-1. [app.netlify.com](https://app.netlify.com) → "Add new site" → import repo.
-2. Build command `npm run build`, publish directory `dist` → Deploy.
-
-**GitHub Pages**
-1. `npm run build`
-2. In `vite.config.ts` set `base: '/YOUR-REPO-NAME/'`.
-3. Publish the `dist` folder with your preferred Pages action or `gh-pages`.
-4. Site appears at `https://YOUR-USERNAME.github.io/YOUR-REPO-NAME/`
-
-**Or share instantly without a repo:** run `npm run build`, zip the `dist`
-folder, and send it — she can open `index.html` from most static hosts, or
-you can drag `dist/` onto [surge.sh](https://surge.sh) for a free URL.
+The AI explainer (`Ask`) only answers from the scheme record provided to it and
+falls back to a grounded template when no server key is configured. The key stays
+server-side in `api/explain.ts` (Vercel function) via `AI_API_KEY`.
 
 ---
 
-## 📁 Project structure
+## Data & honesty rules
+
+- Every scheme record has: official source URL, verification status, last-verified
+  date, administering body, document list and rule set.
+- Statuses are `verified` / `needs-reverification` / `incomplete` / `archived` —
+  set from actual source checks, never to look good. Archived schemes are flagged,
+  not hidden.
+- Never fabricate amounts, deadlines or URLs. Unverified benefit amounts are
+  labelled as such (`trust.benefitsUnverified`).
+- The admin overlay (`#/admin`, token from `VITE_ADMIN_TOKEN`, min 8 chars) only
+  re-checks verification status and publish state — it cannot invent data.
+
+---
+
+## What is saved, and where
+
+Everything stays in the browser under the `sahayak:` prefix in `localStorage`:
+
+| Key                     | Purpose                                   |
+| ----------------------- | ----------------------------------------- |
+| `sahayak:answers`       | Your questionnaire answers                |
+| `sahayak:passport`      | Saved schemes and receipts                |
+| `sahayak:profiles`      | Family member profiles                    |
+| `sahayak:ready-docs`    | Document readiness ticks                  |
+| `sahayak:metrics`       | Local usage counters (no tracking)        |
+| `sahayak:lang` / `inclusive` | Language and large-text preference    |
+
+No server, no accounts, no Aadhaar/OTP/bank details — ever. The footer's
+"clear my data" wipes all of it.
+
+---
+
+## Project structure
 
 ```
+api/explain.ts            Server-side AI explainer (keeps API keys off the client)
+scripts/smoke-test.mjs    Playwright (Edge) smoke test
+tests/engine.test.ts      Engine unit tests (node --test)
+public/sw.js              Offline-lite service worker
 src/
-  config/site.ts              ← ALL personalization lives here
-  components/
-    background/               animated stars, petals, hearts, gradients
-    navigation/               progress bar + section dots
-    sections/                 welcome, story, letter, gallery, cards,
-                              surprise, music player, intro, final, footer
-    ui/                       buttons, headings, fade-ins, counters
-  hooks/                      typewriter, localStorage, dialog focus
-  lib/                        theme, dates, scrolling helpers
-scripts/                      gallery/music generators + smoke test
-public/
-  gallery/                    ← put your photos here
-  audio/                      ← put your song here
+  app/App.tsx             Hash router  (/, /discover, /results, /scheme/:id,
+                         /receipt/:id, /documents/:id, /passport, /directory,
+                         /compare, /family, /ask/:id?, /admin, /about)
+  app/AppShell.tsx        Header, nav, language switch, footer + disclaimer
+  data/                   Scheme catalogue, questions, documents, personas
+  engine/eligibility.ts   Deterministic rule evaluation
+  i18n/                   en.ts + te.ts dictionaries, provider, hooks
+  pages/                  One file per route
+  services/               localStorage, store, metrics, passport, admin, ai, speech
+  components/             QuestionField, SchemeCard, ui primitives
 ```
+
+---
+
+## Deploy
+
+**GitHub Pages** (already wired): push to `main` → `.github/workflows/deploy.yml`
+builds and publishes. `vite.config.ts` keeps `base: '/mine-/'` for Pages.
+
+**Vercel**: import the repo; `VERCEL=1` switches the base to `/` automatically,
+and `api/explain.ts` deploys as a serverless function (set `AI_API_KEY`).
