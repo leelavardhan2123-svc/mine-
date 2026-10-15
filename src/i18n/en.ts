@@ -399,6 +399,30 @@ export const en = {
     'Scheme records are maintained in this application with a source URL, verification status and last-verified date. Where a record could not be re-verified recently, it is flagged rather than presented as current.',
   'about.privacyLink': 'Privacy & data',
   'about.contact': 'Built for INNOHACKS 2.0 by team Sahayak.',
+
+  'assistant.name': 'Sahayak AI',
+  'assistant.greeting':
+    'Hello! I am the Sahayak AI assistant. Ask me about any government scheme — what it is, who it is for, benefits, documents or how to apply. I answer only from the verified scheme records in this catalogue.',
+  'assistant.open': 'Open Sahayak AI assistant',
+  'assistant.close': 'Close assistant',
+  'assistant.placeholder': 'Ask about a scheme…',
+  'assistant.send': 'Send',
+  'assistant.typing': 'Thinking…',
+  'assistant.disclaimer':
+    'Answers are informational from the scheme record. Final eligibility is confirmed only by the concerned department.',
+  'assistant.chipMatches': 'Schemes for me',
+  'assistant.chipAsk': 'What is PM-KISAN?',
+  'assistant.chipApply': 'How do I apply?',
+  'assistant.chipAbout': 'What is Sahayak?',
+  'assistant.noAnswers':
+    'You have not completed the questionnaire yet, so I cannot match schemes to your profile.',
+  'assistant.noAnswersHint': 'Answer a few questions and I will list schemes that may fit you.',
+  'assistant.startQuestionnaire': 'Start questionnaire',
+  'assistant.matchesIntro': 'Based on your saved answers, these schemes may fit you:',
+  'assistant.noMatches':
+    'No scheme in this catalogue currently matches your saved answers. Try retaking the questionnaire with more details, or browse the directory.',
+  'assistant.openScheme': 'Open scheme',
+  'assistant.hint': 'Tip: mention a scheme by name, or tap a chip below.',
 } as const
 
 export type MessageKey = keyof typeof en

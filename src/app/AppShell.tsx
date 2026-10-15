@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { GraduationCap, Menu, ShieldCheck, WifiOff, X } from 'lucide-react'
+import AssistantWidget from '../components/AssistantWidget.tsx'
 import { navigate } from '../hooks/useHashRoute.ts'
 import { useInclusiveMode, useOnline } from '../hooks/useApp.ts'
 import { useI18n } from '../i18n/useI18n.ts'
@@ -234,6 +235,8 @@ export default function AppShell({
           </div>
         </div>
       </footer>
+
+      <AssistantWidget />
     </div>
   )
 }

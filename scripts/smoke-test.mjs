@@ -125,6 +125,15 @@ try {
   await page.goto(`${BASE}/#/admin`, { waitUntil: 'networkidle' })
   check('admin without token is locked', await vis(page.getByText(/passphrase|not configured/i).first()))
 
+  const assistantButton = page.getByRole('button', { name: /open sahayak ai assistant/i })
+  check('assistant floating button present', await vis(assistantButton))
+  await assistantButton.click()
+  check('assistant panel opens', await vis(page.getByRole('region', { name: /sahayak ai/i })))
+  check('assistant greets user', await vis(page.getByText(/hello/i).first()))
+  await page.getByRole('button', { name: /what is pm-kisan/i }).click()
+  check('assistant answers scheme question', await vis(page.getByText(/PM-KISAN/i).last(), 12000))
+  await page.getByRole('button', { name: /close assistant/i }).first().click()
+
   check('no console/page errors', errors.length === 0, errors.slice(0, 3).join(' | '))
 } finally {
   await browser.close()

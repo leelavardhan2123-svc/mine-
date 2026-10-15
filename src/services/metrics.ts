@@ -6,6 +6,7 @@ export type Metrics = {
   passportSaves: number
   docsReady: number
   aiQuestions: number
+  assistantOpens: number
 }
 
 const EMPTY: Metrics = {
@@ -14,6 +15,7 @@ const EMPTY: Metrics = {
   passportSaves: 0,
   docsReady: 0,
   aiQuestions: 0,
+  assistantOpens: 0,
 }
 
 export function readMetrics(): Metrics {

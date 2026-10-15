@@ -1,4 +1,5 @@
 import type { Scheme } from '../types.ts'
+import { moreCentralSchemes } from './central-more.ts'
 
 export const centralSchemes: Scheme[] = [
   {
@@ -1051,4 +1052,5 @@ export const centralSchemes: Scheme[] = [
     knownUncertainty: { en: 'EPFO/ESIC members and income tax payers are excluded; registration drives and state welfare benefits added through e-Shram keep changing.' },
     publication: 'published',
   },
+  ...moreCentralSchemes,
 ]

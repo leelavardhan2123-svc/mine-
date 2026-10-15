@@ -17,8 +17,9 @@ offline-lite, admin overlay. User: **leelavardhan**, beginner — explain simply
   /documents/:id, /passport, /directory, /compare, /family, /ask/:id?, /admin, /about`
 - Engine statuses: `likely | potential | insufficient | not-matching`; radar:
   `strong | possible | needs-info | not-matching`; `manual-verify` rules always unknown
-- Data: `src/data/schemes/central.ts` (19) + `states.ts` (16), `src/data/questions.ts`,
-  `src/data/documents.ts`; all en + te strings live in `src/i18n/en.ts` / `te.ts`
+- Data: `src/data/schemes/central.ts` (19) + `central-more.ts` (30, total 49 central) +
+  `states.ts` (16), `src/data/questions.ts`, `src/data/documents.ts`;
+  all en + te strings live in `src/i18n/en.ts` / `te.ts`
 - Storage prefix `sahayak:` via `src/services/storage.ts`; AI key only server-side
   (`api/explain.ts`, `AI_API_KEY`); admin token via `VITE_ADMIN_TOKEN` (min 8 chars)
 - Node test files import `*.ts` paths explicitly (`allowImportingTsExtensions`); `rg`

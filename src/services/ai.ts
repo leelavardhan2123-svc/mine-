@@ -1,12 +1,13 @@
 import type { Localized } from '../data/types.ts'
 import type { Scheme } from '../data/types.ts'
-import { getScheme } from '../data/index.ts'
+import { ALL_SCHEMES, getScheme } from '../data/index.ts'
 import { bumpMetric, readMetrics } from './metrics.ts'
 
 export type AiAnswer = {
   text: string
   mode: 'grounded' | 'ai'
   sources: { label: string; url: string }[]
+  schemeId?: string
 }
 
 export const SUGGESTED_QUESTIONS: Localized[] = [
@@ -23,8 +24,47 @@ type GroundedInput = {
   lang: 'en' | 'te'
 }
 
+export function matchSchemeByName(message: string): Scheme | undefined {
+  const q = message.toLowerCase()
+  if (q.length < 3) return undefined
+  const stop = new Set([
+    'what', 'who', 'how', 'the', 'for', 'about', 'scheme', 'schemes', 'tell', 'me',
+    'please', 'can', 'you', 'is', 'are', 'does', 'my', 'any', 'వివరాలు', 'పథకం',
+  ])
+  const words = q
+    .replace(/[^a-z0-9\u0900-\u097f\u0c00-\u0c7f\s-]/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length > 2 && !stop.has(word))
+  let best: { scheme: Scheme; score: number } | undefined
+  for (const scheme of ALL_SCHEMES) {
+    if (scheme.publication !== 'published') continue
+    const haystacks = [
+      scheme.id.replace(/-/g, ' '),
+      scheme.name.en.toLowerCase(),
+      scheme.fullName.en.toLowerCase(),
+    ]
+    for (const haystack of haystacks) {
+      for (const word of words) {
+        if (haystack.includes(word)) {
+          const score = word.length + (haystack.startsWith(word) ? 4 : 0)
+          if (!best || score > best.score) best = { scheme, score }
+        }
+      }
+    }
+    const name = scheme.name.en.toLowerCase()
+    const fullName = scheme.fullName.en.toLowerCase()
+    if (q.includes(name) || q.includes(fullName)) return scheme
+  }
+  return best && best.score >= 5 ? best.scheme : undefined
+}
+
+function pickLocal(value: Localized, lang: 'en' | 'te') {
+  return lang === 'te' && value.te ? value.te : value.en
+}
+
 function groundedAnswer({ question, schemeId, lang }: GroundedInput): AiAnswer {
-  const scheme: Scheme | undefined = schemeId ? getScheme(schemeId) : undefined
+  const matched = schemeId ? getScheme(schemeId) : matchSchemeByName(question)
+  const scheme: Scheme | undefined = matched
   const q = question.toLowerCase()
   const te = lang === 'te'
   const sources = scheme
@@ -35,17 +75,26 @@ function groundedAnswer({ question, schemeId, lang }: GroundedInput): AiAnswer {
     : []
 
   if (!scheme) {
+    if (/hello|hi\b|hey|namaste|నమస్తే|హలో/.test(q)) {
+      return {
+        text: te
+          ? 'నమస్తే! నేను సహాయక్ AI సహాయకుడిని. పథకాల గురించి ప్రశ్నించండి — "PM-KISAN అంటే ఏమిటి?", "నాకు ఏ పథకాలు వర్తిస్తాయి?" వంటివి అడగండి.'
+          : 'Hello! I am the Sahayak AI assistant. Ask me about any scheme — for example "What is PM-KISAN?" or "Which schemes fit me?" — and I will answer from the verified scheme records in this catalogue.',
+        mode: 'grounded',
+        sources: [],
+      }
+    }
     return {
       text: te
-        ? 'సహాయక్‌లో ప్రస్తుతం AI సేవ కాన్ఫిగర్ చేయబడలేదు. ఒక పథకాన్ని తెరిచి, దాని గురించి ప్రశ్నించండి — సమాధానం ఆ పథకం రికార్డుల నుండే వస్తుంది.'
-        : 'No AI service is configured right now. Open a scheme and ask about it — answers are assembled from that scheme’s own verified record.',
+        ? 'ఆ ప్రశ్నకు నేను ఖచ్చితమైన సమాధానం కనుగొనలేదు. పథకం పేరు చెప్పి అడగండి (ఉదా: "జల్ జీవన్ మిషన్ అంటే ఏమిటి?"), లేదా కింది చిప్‌లను ఉపయోగించండి. సమాధానాలు ఈ కేటలాగ్‌లోని అధికారిక రికార్డుల నుండే వస్తాయి; తుది అర్హత సంబంధిత శాఖే నిర్ధారిస్తుంది.'
+        : 'I could not match that to a scheme in this catalogue. Try naming a scheme — for example "How does Jal Jeevan Mission work?" — or use the quick chips below. Answers come from the official records recorded here; final eligibility is always confirmed by the concerned department.',
       mode: 'grounded',
       sources: [],
     }
   }
 
   const name = lang === 'te' && scheme.name.te ? scheme.name.te : scheme.name.en
-  const pickLocal = (value: Localized) => (lang === 'te' && value.te ? value.te : value.en)
+  const local = (value: Localized) => pickLocal(value, lang)
 
   let body: string
   if (/document|papers|proof|పత్ర|ధ్రువీ/.test(q)) {
@@ -57,30 +106,41 @@ function groundedAnswer({ question, schemeId, lang }: GroundedInput): AiAnswer {
       : `Documents recorded for ${name}:\n${docs}\n\nSome documents can vary by local office practice — confirm on the official portal.`
   } else if (/who|intended|beneficiar|ఎవరు|కోసం/.test(q)) {
     body = te
-      ? `${name}: ${pickLocal(scheme.beneficiaries)}\n\n${pickLocal(scheme.eligibilityText)}`
+      ? `${name}: ${local(scheme.beneficiaries)}\n\n${local(scheme.eligibilityText)}`
       : `${name} is meant for: ${scheme.beneficiaries.en}\n\nEligibility as recorded: ${scheme.eligibilityText.en}`
   } else if (/apply|application|how|దరఖాస్తు|ఎలా/.test(q)) {
     body = te
-      ? `${name} దరఖాస్తు విధానం:\n${pickLocal(scheme.application)}`
+      ? `${name} దరఖాస్తు విధానం:\n${local(scheme.application)}`
       : `How to apply for ${name}:\n${scheme.application.en}`
   } else if (/verify|before|check|తనిఖీ|ముందు/.test(q)) {
     body = te
-      ? `దరఖాస్తు చేసే ముందు: మూలం ధ్రువీకరణ స్థితి — ${scheme.verification}, చివరిసారి తనిఖీ ${scheme.lastVerified}.${scheme.knownUncertainty ? `\n\nతెలిసిన అనిశ్చితి: ${pickLocal(scheme.knownUncertainty)}` : ''}\n\nఅర్హతను సంబంధిత శాఖ మాత్రమే తుదిగా నిర్ధారిస్తుంది.`
+      ? `దరఖాస్తు చేసే ముందు: మూలం ధ్రువీకరణ స్థితి — ${scheme.verification}, చివరిసారి తనిఖీ ${scheme.lastVerified}.${scheme.knownUncertainty ? `\n\nతెలిసిన అనిశ్చితి: ${local(scheme.knownUncertainty)}` : ''}\n\nఅర్హతను సంబంధిత శాఖ మాత్రమే తుదిగా నిర్ధారిస్తుంది.`
       : `Before applying: check the source verification status (${scheme.verification}) and last-verified date (${scheme.lastVerified}).${scheme.knownUncertainty ? `\n\nKnown uncertainty: ${scheme.knownUncertainty.en}` : ''}\n\nFinal eligibility is always determined by the concerned department.`
   } else {
     body = te
-      ? `${name} — ${pickLocal(scheme.summary)}\n\nప్రయోజనం: ${pickLocal(scheme.benefits)}\n\nదరఖాస్తు: ${pickLocal(scheme.application)}`
+      ? `${name} — ${local(scheme.summary)}\n\nప్రయోజనం: ${local(scheme.benefits)}\n\nదరఖాస్తు: ${local(scheme.application)}`
       : `${name} — ${scheme.summary.en}\n\nBenefits: ${scheme.benefits.en}\n\nApplying: ${scheme.application.en}`
   }
 
-  return { text: body, mode: 'grounded', sources }
+  return { text: body, mode: 'grounded', sources, schemeId: scheme.id }
+}
+
+function aiEndpoint(): string | null {
+  const configured = import.meta.env.VITE_AI_ENDPOINT as string | undefined
+  if (configured) return configured
+  if (typeof window !== 'undefined' && window.location.hostname.endsWith('vercel.app')) {
+    return '/api/explain'
+  }
+  return null
 }
 
 async function aiAnswer(input: GroundedInput): Promise<AiAnswer | null> {
+  const endpoint = aiEndpoint()
+  if (!endpoint) return null
   const controller = new AbortController()
   const timer = window.setTimeout(() => controller.abort(), 8000)
   try {
-    const response = await fetch('/api/explain', {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
