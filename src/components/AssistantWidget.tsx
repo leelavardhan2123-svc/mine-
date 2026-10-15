@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ExternalLink, MessageCircle, Send, Sparkles, X } from 'lucide-react'
+import { ExternalLink, MessageCircle, Mic, Send, Sparkles, Volume2, VolumeX, X } from 'lucide-react'
 import { navigate } from '../hooks/useHashRoute.ts'
 import { useI18n } from '../i18n/useI18n.ts'
 import { ALL_SCHEMES, getScheme } from '../data/index.ts'
@@ -9,6 +9,12 @@ import { answerQuestion, matchSchemeByName } from '../services/ai.ts'
 import type { AiAnswer } from '../services/ai.ts'
 import { useAppState } from '../services/store.ts'
 import { bumpMetric } from '../services/metrics.ts'
+import {
+  speakText,
+  speechSupported,
+  startVoiceInput,
+  voiceInputSupported,
+} from '../services/speech.ts'
 
 type ChatMessage = {
   id: number
@@ -33,8 +39,13 @@ export default function AssistantWidget() {
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [voiceReplies, setVoiceReplies] = useState(true)
+  const [listening, setListening] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
   const greetedRef = useRef(false)
+  const lastSpokenRef = useRef(0)
+  const stopRecognitionRef = useRef<(() => void) | null>(null)
+  const voiceLang = lang === 'te' ? 'te-IN' : 'en-IN'
 
   useEffect(() => {
     if (!open || greetedRef.current) return
@@ -47,6 +58,14 @@ export default function AssistantWidget() {
       },
     ])
   }, [open, t])
+
+  useEffect(() => {
+    const message = [...messages].reverse().find((entry) => entry.role === 'assistant')
+    if (!message) return
+    if (lastSpokenRef.current === message.id) return
+    lastSpokenRef.current = message.id
+    if (voiceReplies && open && speechSupported()) speakText(message.text, voiceLang)
+  }, [messages, voiceReplies, voiceLang, open, t])
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' })
@@ -128,6 +147,30 @@ export default function AssistantWidget() {
     }
   }
 
+  const toggleMic = () => {
+    if (listening) {
+      stopRecognitionRef.current?.()
+      stopRecognitionRef.current = null
+      setListening(false)
+      return
+    }
+    const stop = startVoiceInput({
+      lang: voiceLang,
+      onResult: (text) => {
+        setInput(text)
+        void send(text)
+      },
+      onEnd: () => {
+        stopRecognitionRef.current = null
+        setListening(false)
+      },
+    })
+    if (stop) {
+      stopRecognitionRef.current = stop
+      setListening(true)
+    }
+  }
+
   const chips: { key: 'assistant.chipMatches' | 'assistant.chipAsk' | 'assistant.chipApply' | 'assistant.chipAbout'; send: string }[] = [
     { key: 'assistant.chipMatches', send: t('assistant.chipMatches') },
     { key: 'assistant.chipAsk', send: t('assistant.chipAsk') },
@@ -148,8 +191,22 @@ export default function AssistantWidget() {
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold leading-tight">{t('assistant.name')}</p>
-              <p className="text-[11px] leading-tight text-white/70">{t('app.tagline')}</p>
+              <p className="text-[11px] leading-tight text-white/70">
+                {listening ? t('assistant.micListening') : t('app.tagline')}
+              </p>
             </div>
+            {speechSupported() && (
+              <button
+                type="button"
+                onClick={() => setVoiceReplies((value) => !value)}
+                aria-pressed={voiceReplies}
+                aria-label={voiceReplies ? t('assistant.voiceOn') : t('assistant.voiceOff')}
+                title={voiceReplies ? t('assistant.voiceOn') : t('assistant.voiceOff')}
+                className="rounded-full p-1.5 hover:bg-white/15"
+              >
+                {voiceReplies ? <Volume2 size={16} aria-hidden /> : <VolumeX size={16} aria-hidden />}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -186,6 +243,17 @@ export default function AssistantWidget() {
                         {source.label}
                       </a>
                     ))}
+                    {speechSupported() && (
+                      <button
+                        type="button"
+                        onClick={() => speakText(message.text, voiceLang)}
+                        aria-label={t('assistant.listen')}
+                        title={t('assistant.listen')}
+                        className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-1 text-[11px] font-semibold text-muted ring-1 ring-line hover:text-navy"
+                      >
+                        <Volume2 size={11} aria-hidden />
+                      </button>
+                    )}
                   </div>
                 )}
                 {message.role === 'assistant' && message.schemeId && (
@@ -253,6 +321,12 @@ export default function AssistantWidget() {
                 </button>
               ))}
             </div>
+            {listening && (
+              <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-danger">
+                <span className="size-2 animate-pulse rounded-full bg-danger" aria-hidden />
+                {t('assistant.micListening')}
+              </p>
+            )}
             <form
               className="mt-2 flex items-center gap-2"
               onSubmit={(event) => {
@@ -261,12 +335,25 @@ export default function AssistantWidget() {
               }}
             >
               <input
-                className="input !mt-0 flex-1 !py-1.5 text-[13px]"
+                className="input !mt-0 min-w-0 flex-1 !py-1.5 text-sm"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 placeholder={t('assistant.placeholder')}
                 aria-label={t('assistant.placeholder')}
               />
+              {voiceInputSupported() && (
+                <button
+                  type="button"
+                  onClick={toggleMic}
+                  aria-label={listening ? t('assistant.micListening') : t('assistant.mic')}
+                  title={t('assistant.mic')}
+                  className={`btn !px-2.5 !py-1.5 ${
+                    listening ? 'btn-primary animate-pulse' : 'btn-outline'
+                  }`}
+                >
+                  <Mic size={14} aria-hidden />
+                </button>
+              )}
               <button
                 type="submit"
                 disabled={thinking || !input.trim()}

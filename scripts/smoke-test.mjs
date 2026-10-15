@@ -48,6 +48,14 @@ try {
   await page.waitForTimeout(400)
   check('questionnaire opens', await vis(page.getByText(/step|question/i).first()))
 
+  const stateInput = page.getByPlaceholder(/select your state/i)
+  check('state field allows typing', await vis(stateInput))
+  await stateInput.fill('Telangana')
+  await page.waitForTimeout(250)
+  const stateValue = await stateInput.inputValue()
+  const unknownHint = await page.getByText(/type your state and pick/i).count()
+  check('typed state resolves to a state', stateValue === 'Telangana' && unknownHint === 0)
+
   const next = page.getByRole('button', { name: /next|continue/i }).first()
   let stepsDone = 0
   for (let i = 0; i < 6 && (await vis(next, 2500)); i += 1) {
@@ -132,6 +140,11 @@ try {
   check('assistant greets user', await vis(page.getByText(/hello/i).first()))
   await page.getByRole('button', { name: /what is pm-kisan/i }).click()
   check('assistant answers scheme question', await vis(page.getByText(/PM-KISAN/i).last(), 12000))
+  check('assistant has voice reply toggle', await vis(page.getByRole('button', { name: /voice replies/i }).first()))
+  check('assistant has listen button on answers', await vis(page.getByRole('button', { name: /hear this answer/i }).first()))
+  check('assistant has voice input button', await vis(page.getByRole('button', { name: /speak your question/i }).first()))
+  const typeBox = page.getByLabel(/ask about a scheme/i)
+  check('assistant accepts typed text', await vis(typeBox) && await typeBox.isEditable())
   await page.getByRole('button', { name: /close assistant/i }).first().click()
 
   check('no console/page errors', errors.length === 0, errors.slice(0, 3).join(' | '))

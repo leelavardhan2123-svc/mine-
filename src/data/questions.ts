@@ -445,6 +445,8 @@ export function setAnswerValue(answers: Answers, id: string, value: unknown): An
     const key = id.slice('attributes.'.length) as keyof Answers['attributes']
     return { ...answers, attributes: { ...answers.attributes, [key]: value as never } }
   }
+  if (id === 'state')
+    return { ...answers, state: value === undefined || value === '' ? undefined : (value as Answers['state']) }
   if (id === 'district') return { ...answers, district: value === undefined ? undefined : String(value) }
   if (id === 'socialCategory')
     return { ...answers, socialCategory: value as Answers['socialCategory'] }

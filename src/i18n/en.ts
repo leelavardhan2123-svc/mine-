@@ -423,6 +423,15 @@ export const en = {
     'No scheme in this catalogue currently matches your saved answers. Try retaking the questionnaire with more details, or browse the directory.',
   'assistant.openScheme': 'Open scheme',
   'assistant.hint': 'Tip: mention a scheme by name, or tap a chip below.',
+  'assistant.mic': 'Speak your question',
+  'assistant.micListening': 'Listening… speak now',
+  'assistant.voiceOn': 'Voice replies on — I will read answers aloud',
+  'assistant.voiceOff': 'Voice replies off',
+  'assistant.voiceUnsupported':
+    'Voice input is not supported in this browser — please type your question instead.',
+  'assistant.listen': 'Hear this answer',
+  'discover.stateUnknown':
+    'Type your state and pick it from the suggestions (e.g. Telangana, Andhra Pradesh, TG, AP).',
 } as const
 
 export type MessageKey = keyof typeof en
