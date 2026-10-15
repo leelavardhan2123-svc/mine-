@@ -133,7 +133,7 @@ export const en = {
   'discover.whyWeAsk': 'Why we ask',
   'discover.requiredHint': 'This one helps check most schemes — please answer or choose “Prefer not to say”.',
   'discover.validation': 'Please enter a number between {min} and {max}.',
-  'discover.statePlaceholder': 'Select your state',
+  'discover.statePlaceholder': 'Type or select your state',
   'discover.resume': 'We restored the answers you saved on this device.',
   'discover.resumeClear': 'Start fresh',
   'discover.localNote': 'Answers are stored only in this browser and can be cleared at any time.',
@@ -430,6 +430,10 @@ export const en = {
   'assistant.voiceUnsupported':
     'Voice input is not supported in this browser — please type your question instead.',
   'assistant.listen': 'Hear this answer',
+  'assistant.talkOn':
+    'Voice conversation started. Speak your question — I will answer out loud, then listen again.',
+  'assistant.talkStop': 'Stop voice conversation',
+  'assistant.micHint': 'Tap the microphone for a hands-free voice conversation.',
   'discover.stateUnknown':
     'Type your state and pick it from the suggestions (e.g. Telangana, Andhra Pradesh, TG, AP).',
 } as const

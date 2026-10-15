@@ -134,7 +134,7 @@ export const te: Partial<Messages> = {
   'discover.whyWeAsk': 'ఎందుకు అడుగుతున్నాం',
   'discover.requiredHint': 'ఇది చాలా పథకాలకు సహాయపడుతుంది — సమాధానించండి లేదా “చెప్పడానికి ఇష్టం లేదు” ఎంచుకోండి.',
   'discover.validation': '{min} నుండి {max} మధ్య సంఖ్య నమోదు చేయండి.',
-  'discover.statePlaceholder': 'మీ రాష్ట్రం ఎంచుకోండి',
+  'discover.statePlaceholder': 'మీ రాష్ట్రం టైప్ చేయండి లేదా ఎంచుకోండి',
   'discover.resume': 'ఈ పరికరంలో మీరు భద్రపరిచిన సమాధానాలు తిరిగి లోడ్ అయ్యాయి.',
   'discover.resumeClear': 'కొత్తగా మొదలుపెట్టండి',
   'discover.localNote': 'సమాధానాలు ఈ బ్రౌజర్‌లో మాత్రమే నిల్వ అవుతాయి; ఎప్పుడైనా తొలగించవచ్చు.',
@@ -431,6 +431,10 @@ export const te: Partial<Messages> = {
   'assistant.voiceUnsupported':
     'ఈ బ్రౌజర్‌లో వాయిస్ ఇన్‌పుట్ మద్దతు లేదు — దయచేసి మీ ప్రశ్న టైప్ చేయండి.',
   'assistant.listen': 'ఈ సమాధానం వినండి',
+  'assistant.talkOn':
+    'వాయిస్ సంభాషణ ప్రారంభమైంది. మీ ప్రశ్న మాట్లాడండి — నేను బిగ్గరగా సమాధానం ఇస్తాను, తర్వాత మళ్లీ వింటాను.',
+  'assistant.talkStop': 'వాయిస్ సంభాషణ ఆపండి',
+  'assistant.micHint': 'హ్యాండ్స్-ఫ్రీ వాయిస్ సంభాషణ కోసం మైక్రోఫోన్‌ను తాకండి.',
   'discover.stateUnknown':
     'మీ రాష్ట్రం టైప్ చేసి సూచనల నుండి ఎంచుకోండి (ఉదా. తెలంగాణ, ఆంధ్రప్రదేశ్, TG, AP).',
 }

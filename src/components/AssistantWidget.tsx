@@ -13,6 +13,7 @@ import {
   speakText,
   speechSupported,
   startVoiceInput,
+  stopSpeaking,
   voiceInputSupported,
 } from '../services/speech.ts'
 
@@ -41,11 +42,21 @@ export default function AssistantWidget() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [voiceReplies, setVoiceReplies] = useState(true)
   const [listening, setListening] = useState(false)
+  const [talkMode, setTalkMode] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
   const greetedRef = useRef(false)
   const lastSpokenRef = useRef(0)
+  const speakTokenRef = useRef(0)
+  const talkRef = useRef(false)
+  const askedRef = useRef(false)
+  const thinkingRef = useRef(false)
+  const beginListeningRef = useRef<() => void>(() => {})
   const stopRecognitionRef = useRef<(() => void) | null>(null)
   const voiceLang = lang === 'te' ? 'te-IN' : 'en-IN'
+
+  useEffect(() => {
+    thinkingRef.current = thinking
+  }, [thinking])
 
   useEffect(() => {
     if (!open || greetedRef.current) return
@@ -58,14 +69,6 @@ export default function AssistantWidget() {
       },
     ])
   }, [open, t])
-
-  useEffect(() => {
-    const message = [...messages].reverse().find((entry) => entry.role === 'assistant')
-    if (!message) return
-    if (lastSpokenRef.current === message.id) return
-    lastSpokenRef.current = message.id
-    if (voiceReplies && open && speechSupported()) speakText(message.text, voiceLang)
-  }, [messages, voiceReplies, voiceLang, open, t])
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' })
@@ -104,9 +107,9 @@ export default function AssistantWidget() {
     }
   }
 
-  const send = async (raw: string) => {
+  const send = async (raw: string): Promise<boolean> => {
     const text = raw.trim()
-    if (!text || thinking) return
+    if (!text || thinkingRef.current) return false
     setInput('')
     setMessages((prev) => [...prev, makeUser(text)])
     setThinking(true)
@@ -115,7 +118,7 @@ export default function AssistantWidget() {
       if (/(scheme|పథక).*(for me|fit|నాకు|సరిపో)|which schemes|recommend|my schemes|నాకు ఏ పథక/.test(q)) {
         await new Promise((resolve) => setTimeout(resolve, 250))
         setMessages((prev) => [...prev, matchesMessage()])
-        return
+        return true
       }
       if (/(what is sahayak|about sahayak|సహాయక్ అంటే)/.test(q)) {
         await new Promise((resolve) => setTimeout(resolve, 200))
@@ -128,7 +131,7 @@ export default function AssistantWidget() {
             action: 'open-about',
           },
         ])
-        return
+        return true
       }
       const byName = matchSchemeByName(text)
       const answer: AiAnswer = await answerQuestion({ question: text, schemeId: byName?.id, lang })
@@ -142,34 +145,102 @@ export default function AssistantWidget() {
           schemeId: answer.schemeId,
         },
       ])
+      return true
     } finally {
       setThinking(false)
     }
   }
 
-  const toggleMic = () => {
-    if (listening) {
-      stopRecognitionRef.current?.()
-      stopRecognitionRef.current = null
-      setListening(false)
-      return
-    }
+  const endTalk = () => {
+    talkRef.current = false
+    askedRef.current = false
+    setTalkMode(false)
+    stopRecognitionRef.current?.()
+    stopRecognitionRef.current = null
+    setListening(false)
+    stopSpeaking()
+  }
+
+  const beginListening = () => {
+    if (!talkRef.current || stopRecognitionRef.current) return
     const stop = startVoiceInput({
       lang: voiceLang,
       onResult: (text) => {
+        askedRef.current = true
         setInput(text)
-        void send(text)
+        void send(text).then((handled) => {
+          if (!handled && talkRef.current) {
+            askedRef.current = false
+            window.setTimeout(() => beginListening(), 300)
+          }
+        })
       },
       onEnd: () => {
         stopRecognitionRef.current = null
         setListening(false)
+        if (talkRef.current && !askedRef.current && !thinkingRef.current) {
+          window.setTimeout(() => beginListening(), 400)
+        }
       },
+      onError: () => endTalk(),
     })
     if (stop) {
       stopRecognitionRef.current = stop
       setListening(true)
+    } else {
+      endTalk()
     }
   }
+
+  const toggleTalk = () => {
+    if (talkMode) {
+      endTalk()
+      return
+    }
+    talkRef.current = true
+    askedRef.current = false
+    setTalkMode(true)
+    setVoiceReplies(true)
+    const token = ++speakTokenRef.current
+    const started = speakText(t('assistant.talkOn'), voiceLang, () => {
+      if (token !== speakTokenRef.current || !talkRef.current) return
+      beginListening()
+    })
+    if (!started) beginListening()
+  }
+
+  useEffect(() => {
+    beginListeningRef.current = beginListening
+  })
+
+  useEffect(() => {
+    const message = [...messages].reverse().find((entry) => entry.role === 'assistant')
+    if (!message) return
+    if (lastSpokenRef.current === message.id) return
+    lastSpokenRef.current = message.id
+    if (!voiceReplies || !open || !speechSupported()) return
+    const token = ++speakTokenRef.current
+    speakText(message.text, voiceLang, () => {
+      if (token !== speakTokenRef.current) return
+      if (talkRef.current && askedRef.current) {
+        askedRef.current = false
+        window.setTimeout(() => beginListeningRef.current(), 300)
+      }
+    })
+  }, [messages, voiceReplies, voiceLang, open, t])
+
+  useEffect(() => {
+    if (!open && talkRef.current) endTalk()
+  }, [open])
+
+  useEffect(
+    () => () => {
+      talkRef.current = false
+      stopRecognitionRef.current?.()
+      stopSpeaking()
+    },
+    [],
+  )
 
   const chips: { key: 'assistant.chipMatches' | 'assistant.chipAsk' | 'assistant.chipApply' | 'assistant.chipAbout'; send: string }[] = [
     { key: 'assistant.chipMatches', send: t('assistant.chipMatches') },
@@ -192,13 +263,17 @@ export default function AssistantWidget() {
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold leading-tight">{t('assistant.name')}</p>
               <p className="text-[11px] leading-tight text-white/70">
-                {listening ? t('assistant.micListening') : t('app.tagline')}
+                {listening || talkMode ? t('assistant.micListening') : t('app.tagline')}
               </p>
             </div>
             {speechSupported() && (
               <button
                 type="button"
-                onClick={() => setVoiceReplies((value) => !value)}
+                onClick={() => {
+                  const next = !voiceReplies
+                  setVoiceReplies(next)
+                  if (!next && talkMode) endTalk()
+                }}
                 aria-pressed={voiceReplies}
                 aria-label={voiceReplies ? t('assistant.voiceOn') : t('assistant.voiceOff')}
                 title={voiceReplies ? t('assistant.voiceOn') : t('assistant.voiceOff')}
@@ -344,12 +419,15 @@ export default function AssistantWidget() {
               {voiceInputSupported() && (
                 <button
                   type="button"
-                  onClick={toggleMic}
-                  aria-label={listening ? t('assistant.micListening') : t('assistant.mic')}
-                  title={t('assistant.mic')}
+                  onClick={toggleTalk}
+                  aria-pressed={talkMode}
+                  aria-label={talkMode ? t('assistant.talkStop') : t('assistant.mic')}
+                  title={talkMode ? t('assistant.talkStop') : t('assistant.micHint')}
                   className={`btn !px-2.5 !py-1.5 ${
-                    listening ? 'btn-primary animate-pulse' : 'btn-outline'
-                  }`}
+                    talkMode
+                      ? 'btn-primary'
+                      : 'btn-outline'
+                  } ${listening ? 'animate-pulse' : ''}`}
                 >
                   <Mic size={14} aria-hidden />
                 </button>

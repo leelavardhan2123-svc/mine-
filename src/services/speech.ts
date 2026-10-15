@@ -1,10 +1,18 @@
-export function speakText(text: string, lang: 'en-IN' | 'te-IN' = 'en-IN'): boolean {
+export function speakText(
+  text: string,
+  lang: 'en-IN' | 'te-IN' = 'en-IN',
+  onEnd?: () => void,
+): boolean {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false
   try {
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = lang
     utterance.rate = 0.96
+    if (onEnd) {
+      utterance.onend = () => onEnd()
+      utterance.onerror = () => onEnd()
+    }
     window.speechSynthesis.speak(utterance)
     return true
   } catch {
@@ -29,7 +37,7 @@ type SpeechRecognitionLike = {
   start: () => void
   stop: () => void
   onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null
-  onerror: (() => void) | null
+  onerror: ((event?: { error?: string }) => void) | null
   onend: (() => void) | null
 }
 
@@ -45,6 +53,7 @@ export function startVoiceInput(options: {
   lang: 'en-IN' | 'te-IN'
   onResult: (text: string) => void
   onEnd?: () => void
+  onError?: () => void
 }): (() => void) | null {
   const w = window as unknown as Record<string, unknown>
   const Ctor = (w.SpeechRecognition ?? w.webkitSpeechRecognition) as
@@ -60,7 +69,10 @@ export function startVoiceInput(options: {
       const transcript = event.results?.[0]?.[0]?.transcript ?? ''
       if (transcript) options.onResult(transcript)
     }
-    recognition.onerror = () => options.onEnd?.()
+    recognition.onerror = (event) => {
+      if (event?.error && event.error !== 'no-speech') options.onError?.()
+      options.onEnd?.()
+    }
     recognition.onend = () => options.onEnd?.()
     recognition.start()
     return () => recognition.stop()

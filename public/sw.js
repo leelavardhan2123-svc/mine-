@@ -1,4 +1,4 @@
-const CACHE = 'sahayak-shell-v1'
+const CACHE = 'sahayak-shell-v2'
 
 const SHELL = ['./', './index.html', './favicon.svg']
 
@@ -24,6 +24,21 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
 
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone()
+            caches.open(CACHE).then((cache) => cache.put(request, copy))
+          }
+          return response
+        })
+        .catch(() => caches.match(request).then((cached) => cached ?? caches.match('./index.html'))),
+    )
+    return
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
       const fetched = fetch(request)
@@ -34,7 +49,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response
         })
-        .catch(() => cached ?? caches.match('./index.html'))
+        .catch(() => cached)
       return cached ?? fetched
     }),
   )
