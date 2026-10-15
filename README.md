@@ -2,6 +2,8 @@
 
 **Every eligible citizen deserves to know.**
 
+**Live website:** https://leelavardhan2123-svc.github.io/mine-/
+
 Sahara is a citizen-facing discovery app for Indian government schemes, built for
 the INNOHACKS 2.0 challenge. Answer a short guided questionnaire and get:
 
@@ -30,7 +32,7 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:5173** (the dev server).
+Open **http://localhost:5173** (the dev server — local only; the real site is the live link above).
 
 | Command              | What it does                                   |
 | -------------------- | ---------------------------------------------- |
