@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ArrowLeft, Bookmark, BookmarkCheck, FileText, Receipt, Scale } from 'lucide-react'
+import { ArrowLeft, Bookmark, BookmarkCheck, FileText, Receipt, Route, Scale } from 'lucide-react'
 import { Callout, CategoryPill, LocalizedNote, OfficialLink, SectionHeading, SpeakButton, StatusPill, TrustPill, Card } from '../components/ui/index.tsx'
 import { getScheme } from '../data/index.ts'
 import { assessScheme } from '../engine/eligibility.ts'
@@ -138,6 +138,10 @@ export default function SchemePage({ schemeId }: { schemeId: string }) {
         <button type="button" className="btn btn-outline" onClick={() => navigate(`/documents/${scheme.id}`)}>
           <FileText size={16} aria-hidden />
           {t('scheme.docs')}
+        </button>
+        <button type="button" className="btn btn-outline" onClick={() => navigate(`/roadmap/${scheme.id}`)}>
+          <Route size={16} aria-hidden />
+          {t('scheme.roadmap')}
         </button>
         <button type="button" className="btn btn-outline" onClick={() => navigate(`/receipt/${scheme.id}`)}>
           <Receipt size={16} aria-hidden />

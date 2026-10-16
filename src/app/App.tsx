@@ -16,6 +16,7 @@ const AskPage = lazy(() => import('../pages/AskPage.tsx'))
 const AdminPage = lazy(() => import('../pages/AdminPage.tsx'))
 const AboutPage = lazy(() => import('../pages/AboutPage.tsx'))
 const ComparePage = lazy(() => import('../pages/ComparePage.tsx'))
+const RoadmapPage = lazy(() => import('../pages/RoadmapPage.tsx'))
 
 function RoutedApp() {
   const route = useHashRoute()
@@ -36,6 +37,7 @@ function RoutedApp() {
   else if (first === 'scheme' && second) page = <SchemePage schemeId={second} />
   else if (first === 'receipt' && second) page = <ReceiptPage schemeId={second} />
   else if (first === 'documents' && second) page = <DocumentsPage schemeId={second} />
+  else if (first === 'roadmap' && second) page = <RoadmapPage schemeId={second} />
   else if (first === 'passport') page = <PassportPage />
   else if (first === 'directory') page = <DirectoryPage />
   else if (first === 'compare') page = <ComparePage />

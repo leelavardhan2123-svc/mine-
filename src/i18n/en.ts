@@ -221,7 +221,18 @@ export const en = {
   'scheme.receipt': 'Eligibility receipt',
   'scheme.docs': 'Documents',
   'scheme.askAI': 'Ask about this scheme',
+  'scheme.roadmap': 'Application roadmap',
   'scheme.archivedNote': 'This scheme is archived or discontinued.',
+
+  'roadmap.title': 'Application roadmap',
+  'roadmap.intro':
+    'A step-by-step guide to applying on the official portal for this scheme. Tick each step as you complete it — progress stays only in this browser tab.',
+  'roadmap.disclaimer':
+    'This roadmap is general guidance built from the information recorded for this scheme. Portal screens and wording can change — the official portal and the concerned department are always the final authority.',
+  'roadmap.progress': '{done} of {total} steps done',
+  'roadmap.markStep': 'Mark step {step} as done',
+  'roadmap.unmarkStep': 'Step {step} is done',
+  'roadmap.backToScheme': 'Back to scheme',
 
   'doc.required': 'Required',
   'doc.often-needed': 'Often needed',

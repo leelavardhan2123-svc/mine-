@@ -41,7 +41,7 @@ Open **http://localhost:5173** (the dev server — local only; the real site is 
 | `npm run preview`    | Serve the production build locally             |
 | `npm run lint`       | Lint (oxlint) — keep it at zero warnings       |
 | `npm run test:engine`| 16 unit tests for the eligibility engine       |
-| `npm run smoke`      | 40 browser checks via Microsoft Edge (preview must be running) |
+  | `npm run smoke`      | 42 browser checks via Microsoft Edge (preview must be running) |
 
 Smoke test expects a server at `http://localhost:4173` (or set `SMOKE_URL`):
 

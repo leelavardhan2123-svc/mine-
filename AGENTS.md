@@ -8,13 +8,14 @@ offline-lite, admin overlay. User: **leelavardhan**, beginner — explain simply
 ## Commands
 - `npm run dev` → http://localhost:5173
 - `npm run lint` / `npm run build` / `npm run test:engine` (16 Node unit tests)
-- `npm run preview` (port 4173) then `npm run smoke` (40-check Playwright/Edge test, `SMOKE_URL` override)
+- `npm run preview` (port 4173) then `npm run smoke` (42-check Playwright/Edge test, `SMOKE_URL` override)
 - Edits must pass `npm run lint && npm run build && npm run test:engine`
 
 ## Project facts
 - React 19 + TS 6 (strict, `verbatimModuleSyntax`, `import type`) + Vite 8 + Tailwind 4 + oxlint
 - Hash routing (`useHashRoute`): `/, /discover, /results, /scheme/:id, /receipt/:id,
-  /documents/:id, /passport, /directory, /compare, /family, /ask/:id?, /admin, /about`
+  /documents/:id, /roadmap/:id, /passport, /directory, /compare, /family, /ask/:id?,
+  /admin, /about`
 - Engine statuses: `likely | potential | insufficient | not-matching`; radar:
   `strong | possible | needs-info | not-matching`; `manual-verify` rules always unknown
 - Data: `src/data/schemes/central.ts` (19) + `central-more.ts` (30, total 49 central) +

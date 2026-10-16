@@ -100,6 +100,10 @@ try {
   check('scheme shows official source', (await page.locator('a[target="_blank"][href^="http"]').count()) > 0)
   check('scheme shows last verified', await vis(page.getByText(/verified/i).first()))
 
+  await page.goto(`${BASE}/#/roadmap/pm-kisan`, { waitUntil: 'networkidle' })
+  check('scheme roadmap renders', await vis(page.getByText(/application roadmap/i).first()))
+  check('roadmap lists steps', (await page.locator('main li').count()) >= 6)
+
   await page.goto(`${BASE}/#/receipt/pm-kisan`, { waitUntil: 'networkidle' })
   check('receipt page renders', await vis(page.locator('main')))
 
