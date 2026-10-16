@@ -1,134 +1,103 @@
-# Sahara
+# Sahara — Government Scheme Finder
 
 **Every eligible citizen deserves to know.**
 
+Sahara is a citizen-focused government scheme finder built for INNOHACKS 2.0. It
+helps users discover potentially relevant government schemes based on their
+personal details, with voice interaction and support for 11 Indian languages.
+
 **Live website:** https://leelavardhan2123-svc.github.io/sahara/
 
-Sahara is a citizen-facing discovery app for Indian government schemes, built for
-the INNOHACKS 2.0 challenge. Answer a short guided questionnaire and get:
+## Features
 
-- **Eligibility matches** — a deterministic engine evaluates your answers against
-  structured rules recorded from official sources.
-- **An explainable receipt** — every match shows *why* it matched, what is still
-  missing, and where to verify (source URL + last-verified date).
-- **A document checklist** — tick off documents as you prepare them.
-- **A scheme passport** — saved matches, benefits and application channels.
-- **11 Indian languages** — English, Telugu, Hindi, Tamil, Bengali, Marathi,
-  Gujarati, Kannada, Malayalam, Punjabi and Odia, with speak-aloud.
-- **Family benefit map** — see which schemes may fit each family member.
-- **Offline-lite** — a service worker keeps the shell usable without a network.
+- **Scheme matching:** Matches user information against structured eligibility rules.
+- **Explainable results:** Shows matching conditions, missing information, and official source links.
+- **Document checklist:** Track documents needed for applications.
+- **Scheme passport:** Save schemes and eligibility results.
+- **Family profiles:** Explore schemes for different family members.
+- **Voice accessibility:** Speech input and speak-aloud features.
+- **11 languages:** English, Telugu, Hindi, Tamil, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi, and Odia.
+- **Offline-lite support:** Caches parts of the application for offline use.
 
-Sahara is **not** a government body. It does not accept applications and cannot
-approve benefits; every record links the official portal for the real step.
+## How it works
 
-**Stack:** React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · Framer Motion · Lucide
+Sahara uses a deterministic eligibility engine to evaluate predefined scheme
+rules. It classifies results as likely, potential, insufficient, or not matching
+based on the user's answers.
 
----
+The catalogue contains **65 scheme records**:
 
-## Run it locally
+- 49 Central Government schemes
+- 8 Andhra Pradesh schemes
+- 8 Telangana schemes
+
+Records include eligibility rules, benefits, required documents, official URLs,
+and verification status.
+
+A scheme match is only a preliminary assessment. Final eligibility is determined
+by the relevant government department.
+
+## Technology stack
+
+**React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · Framer Motion · Lucide React**
+
+Browser Speech APIs handle voice input and speak-aloud. The project also includes
+an optional `gpt-4o-mini` integration through a Vercel serverless function.
+
+> **Note:** The remote AI endpoint must be deployed and verified separately from
+> the GitHub Pages frontend. The core eligibility engine works independently of
+> the AI service.
+
+## Run locally
+
+Requires Node.js and npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open **http://localhost:5173** (the dev server — local only; the real site is the live link above).
+Open the local URL displayed by Vite, usually `http://localhost:5173`.
 
-| Command              | What it does                                   |
-| -------------------- | ---------------------------------------------- |
-| `npm run dev`        | Start the dev server                           |
-| `npm run build`      | Type-check + production build into `dist/`     |
-| `npm run preview`    | Serve the production build locally             |
-| `npm run lint`       | Lint (oxlint) — keep it at zero warnings       |
-| `npm run test:engine`| 16 unit tests for the eligibility engine       |
-  | `npm run smoke`      | 42 browser checks via Microsoft Edge (preview must be running) |
-
-Smoke test expects a server at `http://localhost:4173` (or set `SMOKE_URL`):
-
-```bash
-npm run preview          # terminal 1
-npm run smoke            # terminal 2
-```
-
----
-
-## How matching works
-
-- Each scheme in `src/data/schemes/` carries `rules[]` — typed, structured
-  conditions (age, income band, state, occupation, education, attributes…).
-- `src/engine/eligibility.ts` evaluates answers against those rules:
-  - a **required** rule fails → `not-matching`
-  - nothing matched → `insufficient` (questions are listed as missing)
-  - some required answers missing → `potential`
-  - otherwise → `likely`
-- Rules that must be checked by an office are `manual-verify` and always count as
-  unknown — Sahara never pretends to know them.
-- Results sort strong matches first. No scores, no randomness, no popularity.
-
-The AI explainer (`Ask`) only answers from the scheme record provided to it and
-falls back to a grounded template when no server key is configured. The key stays
-server-side in `api/explain.ts` (Vercel function) via `AI_API_KEY`.
-
----
-
-## Data & honesty rules
-
-- Every scheme record has: official source URL, verification status, last-verified
-  date, administering body, document list and rule set.
-- Statuses are `verified` / `needs-reverification` / `incomplete` / `archived` —
-  set from actual source checks, never to look good. Archived schemes are flagged,
-  not hidden.
-- Never fabricate amounts, deadlines or URLs. Unverified benefit amounts are
-  labelled as such (`trust.benefitsUnverified`).
-- The admin overlay (`#/admin`, token from `VITE_ADMIN_TOKEN`, min 8 chars) only
-  re-checks verification status and publish state — it cannot invent data.
-
----
-
-## What is saved, and where
-
-Everything stays in the browser under the `sahayak:` prefix in `localStorage`:
-
-| Key                     | Purpose                                   |
-| ----------------------- | ----------------------------------------- |
-| `sahayak:answers`       | Your questionnaire answers                |
-| `sahayak:passport`      | Saved schemes and receipts                |
-| `sahayak:profiles`      | Family member profiles                    |
-| `sahayak:ready-docs`    | Document readiness ticks                  |
-| `sahayak:metrics`       | Local usage counters (no tracking)        |
-| `sahayak:lang` / `inclusive` | Language and large-text preference    |
-
-No server, no accounts, no Aadhaar/OTP/bank details — ever. The footer's
-"clear my data" wipes all of it.
-
----
+| Command | Purpose |
+| ------- | ------- |
+| `npm run build` | Type-check and build |
+| `npm run lint` | Check code quality |
+| `npm run test:engine` | Run eligibility tests |
+| `npm run preview` | Preview the production build |
+| `npm run smoke` | Run browser smoke tests |
 
 ## Project structure
 
 ```
-api/explain.ts            Server-side AI explainer (keeps API keys off the client)
-scripts/smoke-test.mjs    Playwright (Edge) smoke test
-tests/engine.test.ts      Engine unit tests (node --test)
-public/sw.js              Offline-lite service worker
+api/       Optional AI endpoint
+public/    Service worker
+scripts/   Browser smoke tests
+tests/     Eligibility-engine tests
 src/
-  app/App.tsx             Hash router  (/, /discover, /results, /scheme/:id,
-                         /receipt/:id, /documents/:id, /passport, /directory,
-                         /compare, /family, /ask/:id?, /admin, /about)
-  app/AppShell.tsx        Header, nav, language switch, footer + disclaimer
-  data/                   Scheme catalogue, questions, documents, personas
-  engine/eligibility.ts   Deterministic rule evaluation
-  i18n/                   11 language dictionaries (en/te full, 9 core + en fallback), provider, hooks
-  pages/                  One file per route
-  services/               localStorage, store, metrics, passport, admin, ai, speech
-  components/             QuestionField, SchemeCard, ui primitives
+  app/     Routing and layout
+  data/    Schemes and questionnaires
+  engine/  Eligibility rules
+  i18n/    Language support
+  pages/   Application pages
+  services/ Storage, AI and speech
 ```
 
----
+## Privacy and limitations
 
-## Deploy
+Application data is stored locally in the browser using `localStorage`. The
+current prototype does not use user accounts or a remote application database.
 
-**GitHub Pages** (already wired): push to `main` → `.github/workflows/deploy.yml`
-builds and publishes. `vite.config.ts` keeps `base: '/sahara/'` for Pages.
+Scheme information may require updates, voice support varies by browser, and
+some translations use English fallback text. The remote AI integration must be
+verified before being presented as operational.
 
-**Vercel**: import the repo; `VERCEL=1` switches the base to `/` automatically,
-and `api/explain.ts` deploys as a serverless function (set `AI_API_KEY`).
+Sahara is not a government body. It does not accept applications or approve
+benefits. Users should verify scheme details through the linked official
+government portals before applying.
+
+## Deployment
+
+The frontend is deployed through GitHub Pages. The optional AI endpoint is
+intended to run on Vercel with `AI_API_KEY` configured as a server-side
+environment variable.
